@@ -5,9 +5,10 @@
 
 typedef enum {
 	OK,
-	ERROR_NULL_POINTER,
-	ERROR_PROGRAM_INVOCATION,
-	ERROR_OUT_OF_MEMORY
+	ERROR_NULL_POINTER = 1,
+	ERROR_PROGRAM_INVOCATION = 2,
+	ERROR_OUT_OF_MEMORY = 3,
+	ERROR_INVALID_INPUT_POSITION = 4
 } status_t;
 
 typedef enum {
@@ -27,9 +28,6 @@ typedef enum {
 	FALSE
 } bool_t;
 
-
-typedef int (*comparator_t)(void * t1, void * t2);
-
-
+typedef status_t (*destructor_t)(void **);
 
 #endif

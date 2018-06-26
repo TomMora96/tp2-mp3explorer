@@ -9,7 +9,8 @@ char *errors[] = {
 	MSG_OK,
 	MSG_ERROR_NULL_POINTER,
 	MSG_ERROR_PROGRAM_INVOCATION,
-	MSG_ERROR_OUT_OF_MEMORY
+	MSG_ERROR_OUT_OF_MEMORY,
+	MSG_ERROR_INVALID_INPUT_POSITION,	
 };
 
 status_t errors_printer (status_t status)
