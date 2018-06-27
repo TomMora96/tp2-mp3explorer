@@ -7,7 +7,7 @@
 
 
 /*-------------------Constructors-------------------*/
-status_t ADT_Track_new(ADT_Track_t * *ptr_track)
+status_t ADT_Track_new(ADT_Track_t ** ptr_track)
 {
 	if(ptr_track == NULL)
 		return ERROR_NULL_POINTER;

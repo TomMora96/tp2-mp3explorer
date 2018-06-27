@@ -56,21 +56,7 @@ status_t validate_arguments (int argc, char *argv[], config_t *config)
 	if (strcmp(argv[CMD_ARG_OUTPUT_FILE_TOKEN_POS], OUTPUT_FILE_TOKEN))
 		return ERROR_PROGRAM_INVOCATION;
 
-	/*
-	while(i < MAX_OUTPUT_FORMATS)
-	{
-		if(strcmp(argv[CMD_ARGUMENT_FORMAT_VALUE_POS], output_formats[i]))
-		{
-			config -> output_format = i;
-			break;
-		}
-		else if (i == MAX_OUTPUT_FORMATS - 1)
-			return ERROR_PROGRAM_INVOCATION;
-		
-		i++;
-	}
-	*/
-	
+
 	for(i = 0; (i < MAX_OUTPUT_FORMATS) && (output_format_is_valid == FALSE); i++)
 	{
 		if(!strcmp(argv[CMD_ARG_OUTPUT_FORMAT_VALUE_POS], output_formats[i]))
