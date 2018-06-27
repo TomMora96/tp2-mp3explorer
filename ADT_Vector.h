@@ -36,9 +36,9 @@ status_t ADT_Vector_add_element(ADT_Vector_t * v, void * element);
 
 /*-------------------Exporters---------------------*/
 status_t ADT_Vector_export_as_csv(const void * v, const void * context, FILE * fo);
-status_t ADT_Vector_set_xml_exporter(ADT_Vector_t * v, exporter_t pf);
-status_t ADT_Vector_export_as_xml(const void * v, const void * context, FILE * fo);
+status_t ADT_Vector_export_as_xml (const void * v, const void * context, FILE * fo);
 status_t ADT_Vector_set_csv_exporter(ADT_Vector_t * v, exporter_t pf);
+status_t ADT_Vector_set_xml_exporter(ADT_Vector_t * v, exporter_t pf);
 
 
 #endif

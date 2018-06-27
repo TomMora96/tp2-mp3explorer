@@ -50,7 +50,7 @@ status_t ADT_Track_new_from_parameters(ADT_Track_t * *ptr_track, char * name, ch
 	return OK;
 }
 
-status_t ADT_Track_new_from_mp3_file(FILE * fi, ADT_Track_t * *ptr_track)
+status_t ADT_Track_new_from_mp3_file(FILE * fi, ADT_Track_t ** ptr_track)
 {
 	status_t  st;
 	char mp3_header[MP3_HEADER_SIZE];
@@ -64,9 +64,9 @@ status_t ADT_Track_new_from_mp3_file(FILE * fi, ADT_Track_t * *ptr_track)
 	if((st = ADT_Track_new(ptr_track)) != OK)
 		return st;
 
-	if((st = read_header_from_mp3(fi, &mp3_header)) != OK)
+	if((st = read_header_from_mp3(fi, mp3_header)) != OK)
 	{
-		ADT_Track_destroy(ptr_track);
+		ADT_Track_destroy((void **) &ptr_track);
 		return st;
 	}
 
@@ -98,9 +98,10 @@ status_t ADT_Track_new_from_mp3_file(FILE * fi, ADT_Track_t * *ptr_track)
 
 
 /*-------------------Destructor---------------------*/
-status_t ADT_Track_destroy(void * *pp)
+status_t ADT_Track_destroy(void ** pp)
 {	
-	ADT_Track ** ptr_track= (ADT_Track **) pp;
+	ADT_Track_t ** ptr_track = (ADT_Track_t **) pp;
+
 	if(ptr_track == NULL)
 		return ERROR_NULL_POINTER;
 	
@@ -138,11 +139,11 @@ status_t ADT_Track_export_as_csv (const void * pv, const void * p_context, FILE 
 	if (pv == NULL || p_context == NULL || fo == NULL)
 		return ERROR_NULL_POINTER;
 
-	if ((st = ADT_Track_get_name(p, str)) != OK)
+	if ((st = ADT_Track_get_name(p, &str)) != OK)
 		return st;
 	fprintf(fo, "%s%c", str, delimiter);
 
-	if ((st = ADT_Track_get_artist(p, str)) != OK)
+	if ((st = ADT_Track_get_artist(p, &str)) != OK)
 		return st;
 	fprintf(fo, "%s%c", str, delimiter);
 
@@ -166,13 +167,13 @@ status_t ADT_Track_export_as_xml (const void * pv, const void * p_context, FILE 
 	if (pv == NULL || p_context == NULL || fo == NULL)
 		return ERROR_NULL_POINTER;
 
-	if ((st = ADT_Track_get_name(p, str)) != OK)
+	if ((st = ADT_Track_get_name(p, &str)) != OK)
 		return st;
 	fputs("<tracks>", fo);
 	fputs("\t<track>", fo);
 	fprintf(fo, "\t\t%s%s%s\n", "<name>", p -> name, "<name>");
 
-	if ((st = ADT_Track_get_artist(p, str)) != OK)
+	if ((st = ADT_Track_get_artist(p, &str)) != OK)
 		return st;
 	fprintf(fo, "\t\t%s%s%s\n", "<artist>", p -> artist, "<artist>");
 
@@ -191,7 +192,7 @@ status_t ADT_Track_get_name(ADT_Track_t *track, char * *name)
 	if(track == NULL || name == NULL)
 		return ERROR_NULL_POINTER;
 
-	if((*name = strdup(track -> name)) NULL)
+	if((*name = strdup(track -> name)) == NULL)
 		return ERROR_OUT_OF_MEMORY;
 
 	return OK;
@@ -202,7 +203,7 @@ status_t ADT_Track_get_artist(ADT_Track_t *track, char * *artist)
 	if(track == NULL || artist == NULL)
 	return ERROR_NULL_POINTER;
 
-	if((*artist = strdup(track -> artist)) NULL)
+	if((*artist = strdup(track -> artist)) == NULL)
 		return ERROR_OUT_OF_MEMORY;
 
 	return OK;
@@ -213,7 +214,7 @@ status_t ADT_Track_get_album(ADT_Track_t *track, char * *album)
 	if(track == NULL || album == NULL)
 		return ERROR_NULL_POINTER;
 
-	if((*album = strdup(track -> album)) NULL)
+	if((*album = strdup(track -> album)) == NULL)
 		return ERROR_OUT_OF_MEMORY;
 
 	return OK;
@@ -234,7 +235,7 @@ status_t ADT_Track_get_comment(ADT_Track_t *track, char * *comment)
 	if(track == NULL || comment == NULL)
 		return ERROR_NULL_POINTER;
 
-	if((*comment = strdup(track -> comment)) NULL)
+	if((*comment = strdup(track -> comment)) == NULL)
 		return ERROR_OUT_OF_MEMORY;
 
 	return OK;
@@ -245,7 +246,7 @@ status_t ADT_Track_get_genre(ADT_Track_t *track, unsigned char *comment)
 	if(track == NULL || comment == NULL)
 		return ERROR_NULL_POINTER;
 
-	*comment = track -> comment;
+	*comment = *track -> comment;
 
 	return OK;
 }

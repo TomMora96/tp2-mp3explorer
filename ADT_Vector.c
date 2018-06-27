@@ -176,7 +176,7 @@ status_t ADT_Vector_set_csv_exporter(ADT_Vector_t * v, exporter_t pf)
 
 }
 
-status_t ADT_Vector_export_as_xml (FILE * fo, const void * v, const void * p_context)
+status_t ADT_Vector_export_as_xml (const void * v, const void * context, FILE * fo)
 {
 
 	ADT_Vector_t * p = (ADT_Vector_t *) v;
@@ -185,7 +185,7 @@ status_t ADT_Vector_export_as_xml (FILE * fo, const void * v, const void * p_con
 	size_t i, v_size;
 	void * element;
 
-	if(fo == NULL || v == NULL || p_context == NULL)
+	if(fo == NULL || v == NULL || context == NULL)
 		return ERROR_NULL_POINTER;
 
 	if(p -> xml_exporter == NULL)
@@ -204,7 +204,7 @@ status_t ADT_Vector_export_as_xml (FILE * fo, const void * v, const void * p_con
 	for(i = 0; i < v_size; i++)
 	{
 		element = ADT_Vector_get_element (v, i);		
-		(p -> xml_exporter)(p -> element, p_context, fo);
+		(p -> xml_exporter)(p -> elements, context, fo);
 	}
 
 	return OK;

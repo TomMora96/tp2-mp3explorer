@@ -5,6 +5,8 @@
 #include "errors.h"
 #include "ADT_Track.h"
 #include "ADT_Vector.h"
+#include "config.h"
+#include "mp3.h"
 
 status_t (*track_exporters[2]) (const void *, const void *, FILE *)= 
 {
@@ -87,3 +89,4 @@ int main(void)
 
 	return OK;
 }
+
