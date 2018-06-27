@@ -12,13 +12,15 @@ status_t ADT_Track_new(ADT_Track_t * *ptr_track)
 	if(ptr_track == NULL)
 		return ERROR_NULL_POINTER;
 
+	printf("%s\n", "no salto en new.");
+	fflush(stdout);
 	if((*ptr_track = (ADT_Track_t *) malloc(sizeof(ADT_Track_t))) == NULL)
 		return ERROR_OUT_OF_MEMORY;
 
 	return OK;
 }
 
-status_t ADT_Track_new_from_parameters(ADT_Track_t * *ptr_track, char * name, char * artist, char * album, unsigned short year, char * comment, unsigned char genre)
+status_t ADT_Track_new_from_parameters(ADT_Track_t * *ptr_track, char * name, char * artist, char * album, unsigned short year, char * comment, char genre)
 {
 	status_t st;
 
@@ -28,6 +30,8 @@ status_t ADT_Track_new_from_parameters(ADT_Track_t * *ptr_track, char * name, ch
 	if((st = ADT_Track_new(ptr_track)) != OK)
 		return st;
 
+	printf("%s\n", "SALI DE TRACK_NEW");
+	fflush(stdout);
 	/*Habría que validar que los parametros cumplen con el ancho del estandar, ya que cuando se crea el track se asigna memoria para eso.*/
 
 	strcpy((*ptr_track) -> name, name);
@@ -37,31 +41,40 @@ status_t ADT_Track_new_from_parameters(ADT_Track_t * *ptr_track, char * name, ch
 	(*ptr_track) -> year = year;
 	(*ptr_track) -> genre = genre;
 
+	printf("%s\n", "HICE LOS STRCPY");
+	fflush(stdout);
 	return OK;
 }
 
 status_t ADT_Track_new_from_mp3_file(FILE * fi, ADT_Track_t * *ptr_track)
 {
 	status_t  st;
-	char MP3_HEADER[MP3_HEADER_SIZE];
+	char * MP3_HEADER;
 
 	if(fi == NULL || ptr_track == NULL)
 		return ERROR_NULL_POINTER;
+	printf("%s\n", "no salto en nfmp3f.");
+	fflush(stdout);
 
 	if((st = ADT_Track_new(ptr_track)) != OK)
 		return st;
+	printf("%s\n", "sali de new.");
+	fflush(stdout);
 
-	if((st = read_header_from_mp3(fi ,MP3_HEADER)) != OK)
+	if((st = read_header_from_mp3(fi, &MP3_HEADER)) != OK)
 	{
 		ADT_Track_destroy(ptr_track);
 		return st;
 	}
+
+	printf("%s%s\n", "Sali de read_header. header: ", MP3_HEADER);
 
 	if((st = parse_header_to_track(MP3_HEADER, *ptr_track)) != OK)
 	{
 		ADT_Track_destroy(ptr_track);
 		return st;
 	}
+
 
 	return OK;
 }
@@ -85,8 +98,12 @@ status_t ADT_Track_printer(void * ptr_track, FILE * fo)
 {
 	ADT_Track_t * p = (ADT_Track_t *) ptr_track;
 
-	fprintf(fo, "%s%s\n%s%s\n%s%s\n%s%d\n%s%s\n%s%c\n", "Nombre: ", p -> name, "Artista: ", p -> artist,
-	"Album: ", p -> album, "Año: ", p -> year, "Comentario: ", p -> comment, "Genero: ", p -> genre);
+	fprintf(fo, "%s%s\n", "Title:", p -> name);
+	fprintf(fo, "%s%s\n", "Artist:", p -> artist);
+	fprintf(fo, "%s%s\n", "Album: ", p -> album);
+	fprintf(fo, "%s%u\n", "Year:", p -> year);
+	fprintf(fo, "%s%s\n", "Comment:", p -> comment);
+	fprintf(fo, "%s%u\n", "Genre:", p -> genre);
 
 	return OK;
 }
@@ -98,7 +115,9 @@ status_t ADT_Track_set_name(ADT_Track_t * ptr_track, const char * name)
 	if(ptr_track == NULL || name == NULL)
 		return ERROR_NULL_POINTER;
 
+	printf("%s%s\n", "estoy en set_name. Name a setear:", name);
 	strcpy(ptr_track -> name, name);
+	printf("%s%s\n", "estoy en set_name. Name seteado:", ptr_track -> name);
 	return OK;	
 }
 

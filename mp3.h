@@ -31,6 +31,7 @@
 #define LEXEM_SPAN_GENRE     1
 
 status_t parse_header_to_track(const char * HEADER, ADT_Track_t *ptr_track);
-status_t read_header_from_mp3(FILE * f, char * header);
+status_t read_header_from_mp3(FILE * f, char * *header);
+status_t show_mp3_header (const char header[], FILE * fo);
 
 #endif
