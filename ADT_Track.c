@@ -12,8 +12,6 @@ status_t ADT_Track_new(ADT_Track_t * *ptr_track)
 	if(ptr_track == NULL)
 		return ERROR_NULL_POINTER;
 
-	printf("%s\n", "no salto en new.");
-	fflush(stdout);
 	if((*ptr_track = (ADT_Track_t *) malloc(sizeof(ADT_Track_t))) == NULL)
 		return ERROR_OUT_OF_MEMORY;
 
@@ -30,51 +28,70 @@ status_t ADT_Track_new_from_parameters(ADT_Track_t * *ptr_track, char * name, ch
 	if((st = ADT_Track_new(ptr_track)) != OK)
 		return st;
 
-	printf("%s\n", "SALI DE TRACK_NEW");
-	fflush(stdout);
-	/*Habría que validar que los parametros cumplen con el ancho del estandar, ya que cuando se crea el track se asigna memoria para eso.*/
-
+	if(strlen(name) > LEXEM_SPAN_TITLE)
+		return ERROR_INVALID_TRACK_PARAMETER;
 	strcpy((*ptr_track) -> name, name);
+
+	if(strlen(artist) > LEXEM_SPAN_ARTIST)
+		return ERROR_INVALID_TRACK_PARAMETER;
 	strcpy((*ptr_track) -> artist, artist);
+
+	if(strlen(album) > LEXEM_SPAN_ALBUM)
+		return ERROR_INVALID_TRACK_PARAMETER;
 	strcpy((*ptr_track) -> album, album);
+
+	if(strlen(comment) > LEXEM_SPAN_COMMENT)
+		return ERROR_INVALID_TRACK_PARAMETER;
 	strcpy((*ptr_track) -> comment, comment);
+	
 	(*ptr_track) -> year = year;
 	(*ptr_track) -> genre = genre;
 
-	printf("%s\n", "HICE LOS STRCPY");
-	fflush(stdout);
 	return OK;
 }
 
 status_t ADT_Track_new_from_mp3_file(FILE * fi, ADT_Track_t * *ptr_track)
 {
 	status_t  st;
-	char * MP3_HEADER;
+	char mp3_header[MP3_HEADER_SIZE];
+	char buf[MP3_HEADER_SIZE];
+	char * temp;
 
 	if(fi == NULL || ptr_track == NULL)
 		return ERROR_NULL_POINTER;
-	printf("%s\n", "no salto en nfmp3f.");
-	fflush(stdout);
+
 
 	if((st = ADT_Track_new(ptr_track)) != OK)
 		return st;
-	printf("%s\n", "sali de new.");
-	fflush(stdout);
 
-	if((st = read_header_from_mp3(fi, &MP3_HEADER)) != OK)
+	if((st = read_header_from_mp3(fi, &mp3_header)) != OK)
 	{
 		ADT_Track_destroy(ptr_track);
 		return st;
 	}
 
-	printf("%s%s\n", "Sali de read_header. header: ", MP3_HEADER);
+	memcpy(buf, mp3_header + LEXEM_START_TITLE, LEXEM_SPAN_TITLE);
+    buf[LEXEM_SPAN_TITLE] = '\0';
+    ADT_Track_set_name(*ptr_track, buf);
 
-	if((st = parse_header_to_track(MP3_HEADER, *ptr_track)) != OK)
-	{
-		ADT_Track_destroy(ptr_track);
-		return st;
-	}
+    memcpy(buf, mp3_header + LEXEM_START_ARTIST, LEXEM_SPAN_ARTIST);
+    buf[LEXEM_SPAN_ARTIST] = '\0';
+    ADT_Track_set_artist(*ptr_track, buf);
 
+    memcpy(buf, mp3_header + LEXEM_START_ALBUM, LEXEM_SPAN_ALBUM);
+    buf[LEXEM_SPAN_ALBUM] = '\0';
+    ADT_Track_set_album(*ptr_track, buf);
+
+    memcpy(buf, mp3_header + LEXEM_START_YEAR, LEXEM_SPAN_YEAR);
+    buf[LEXEM_SPAN_YEAR] = '\0';
+    ADT_Track_set_year(*ptr_track, strtol(buf, &temp, 10));
+
+    memcpy(buf, mp3_header + LEXEM_START_COMMENT, LEXEM_SPAN_COMMENT);
+    buf[LEXEM_SPAN_COMMENT] = '\0';
+    ADT_Track_set_comment(*ptr_track, buf);
+
+    memcpy(buf, mp3_header + LEXEM_START_GENRE, LEXEM_SPAN_GENRE);
+    ADT_Track_set_genre(*ptr_track, buf[0]);
 
 	return OK;
 }
@@ -109,19 +126,83 @@ status_t ADT_Track_printer(void * ptr_track, FILE * fo)
 }
 
 
+/*-------------------Getters------------------------*/
+status_t ADT_Track_get_name(ADT_Track_t *track, char * *name)
+{
+	if(track == NULL || name == NULL)
+		return ERROR_NULL_POINTER;
+
+	if((*name = strdup(track -> name)) NULL)
+		return ERROR_OUT_OF_MEMORY;
+
+	return OK;
+}
+
+status_t ADT_Track_get_artist(ADT_Track_t *track, char * *artist)
+{
+	if(track == NULL || artist == NULL)
+	return ERROR_NULL_POINTER;
+
+	if((*artist = strdup(track -> artist)) NULL)
+		return ERROR_OUT_OF_MEMORY;
+
+	return OK;
+}
+
+status_t ADT_Track_get_album(ADT_Track_t *track, char * *album)
+{
+	if(track == NULL || album == NULL)
+		return ERROR_NULL_POINTER;
+
+	if((*album = strdup(track -> album)) NULL)
+		return ERROR_OUT_OF_MEMORY;
+
+	return OK;
+}
+
+status_t ADT_Track_get_year(ADT_Track_t *track, unsigned short *year)
+{
+	if(track == NULL || year == NULL)
+		return ERROR_NULL_POINTER;
+
+	*year = track -> year;
+
+	return OK;
+}
+
+status_t ADT_Track_get_comment(ADT_Track_t *track, char * *comment)
+{
+	if(track == NULL || comment == NULL)
+		return ERROR_NULL_POINTER;
+
+	if((*comment = strdup(track -> comment)) NULL)
+		return ERROR_OUT_OF_MEMORY;
+
+	return OK;
+}
+
+status_t ADT_Track_get_genre(ADT_Track_t *track, unsigned char *comment)
+{
+	if(track == NULL || comment == NULL)
+		return ERROR_NULL_POINTER;
+
+	*comment = track -> comment;
+
+	return OK;
+}
+
+
 /*-------------------Setters------------------------*/
-status_t ADT_Track_set_name(ADT_Track_t * ptr_track, const char * name)
+status_t ADT_Track_set_name(ADT_Track_t * ptr_track, char * name)
 {
 	if(ptr_track == NULL || name == NULL)
 		return ERROR_NULL_POINTER;
 
-	printf("%s%s\n", "estoy en set_name. Name a setear:", name);
 	strcpy(ptr_track -> name, name);
-	printf("%s%s\n", "estoy en set_name. Name seteado:", ptr_track -> name);
 	return OK;	
 }
 
-status_t ADT_Track_set_artist(ADT_Track_t * ptr_track, const char * artist)
+status_t ADT_Track_set_artist(ADT_Track_t * ptr_track, char * artist)
 {
 	if(ptr_track == NULL || artist == NULL)
 		return ERROR_NULL_POINTER;
@@ -147,7 +228,7 @@ status_t ADT_Track_set_year(ADT_Track_t * ptr_track, unsigned short year)
 	ptr_track -> year = year;
 	return OK;	
 }
-status_t ADT_Track_set_comment(ADT_Track_t * ptr_track, const char * comment)
+status_t ADT_Track_set_comment(ADT_Track_t * ptr_track, char * comment)
 {
 	if(ptr_track == NULL || comment == NULL)
 		return ERROR_NULL_POINTER;

@@ -22,7 +22,7 @@ int main(void)
 		errors_printer(st);
 		return st;
 	}
-
+	fprintf(stdout, "%s%s\n", "acabo de salir de new_track. name: ", ptr_track -> name);
 	if((st = ADT_Track_printer(ptr_track, stdout)) != OK)
 	{
 		errors_printer(st);
