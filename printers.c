@@ -40,12 +40,12 @@ status_t ADT_Track_print_as_csv (const void * pv, const void * p_context, FILE *
 }
 
 
-status_t ADT_Vector_export_as_csv (FILE * fo, const void * v, const void * p_context)
+status_t ADT_Vector_export_as_csv (const void * v, const void * p_context, FILE * fo)
 {
 	ADT_Vector_t * p = (ADT_Vector_t *) v;
 	char delimiter = *((char *)p_context);
 	size_t i, v_size;
-	ADT_Track_t * track;
+	void * element;
 
 	if(fo == NULL || v == NULL)
 		return ERROR_NULL_POINTER;
@@ -54,9 +54,9 @@ status_t ADT_Vector_export_as_csv (FILE * fo, const void * v, const void * p_con
 
 	for(i = 0; i < v_size; i++)
 	{
-		track = ADT_Vector_get_element(v, i);
+		element = ADT_Vector_get_element(v, i);
 
-		ADT_Track_print_as_csv(track, &delimiter, fo);
+		(p -> *csv_exporter)(element, &delimiter, fo);
 	}
 
 	return OK;
@@ -99,7 +99,7 @@ status_t ADT_Vector_export_as_xml (FILE * fo, const void * v, const void * p_con
 	FILE * file_header;
 	int c;
 	size_t i, v_size;
-	ADT_Track_t * track;
+	void * element;
 
 	if ((file_header = fopen(XML_HEADER, "rt")) == NULL)
 		return ERROR_INPUT_FILE_NOT_FOUND;
@@ -113,9 +113,8 @@ status_t ADT_Vector_export_as_xml (FILE * fo, const void * v, const void * p_con
 
 	for(i = 0; i < v_size; i++)
 	{
-		track = ADT_Vector_get_element (v, i);
-		
-		ADT_Track_print_as_xml(v, " NO SE QUE PONER AQUI ", fo);
+		element = ADT_Vector_get_element (v, i);		
+		(p -> *xml_exporter)(p -> element, p_context, fo);
 	}
 
 	return OK;

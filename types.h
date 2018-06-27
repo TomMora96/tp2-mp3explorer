@@ -9,7 +9,9 @@ typedef enum {
 	ERROR_PROGRAM_INVOCATION = 2,
 	ERROR_OUT_OF_MEMORY = 3,
 	ERROR_INVALID_INPUT_POSITION = 4,
-	ERROR_INPUT_FILE_NOT_FOUND = 5
+	ERROR_INPUT_FILE_NOT_FOUND = 5,
+	ERROR_XML_EXPORTER_NOT_SETTED,
+	ERROR_CSV_EXPORTER_NOT_SETTED
 } status_t;
 
 typedef enum {
@@ -30,7 +32,6 @@ typedef enum {
 } bool_t;
 
 typedef status_t (* destructor_t)(void **);
-typedef status_t (* printer_t)(const void * pv, const void * p_context, FILE * fi);
-typedef status_t (* exporter_t)(FILE * fo, const void * v, const void * delimiter);
+typedef status_t (* exporter_t)(const void *, const void *, FILE *);
 
 #endif

@@ -9,6 +9,8 @@
 #define MSG_ERROR_OUT_OF_MEMORY "Error out of memory."
 #define MSG_ERROR_INVALID_INPUT_POSITION "Invalid input position."
 #define MSG_ERROR_INPUT_FILE_NOT_FOUND "Cant open file."
+#define MSG_ERROR_XML_EXPORTER_NOT_SETTED "Tried to export vector to XML without setting the correct exporter function."
+#define MSG_ERROR_XML_EXPORTER_NOT_SETTED "Tried to export vector to CSV without setting the correct exporter function."
 
 status_t errors_printer (status_t status);
 
