@@ -60,15 +60,22 @@ status_t ADT_Track_new_from_mp3_file(FILE * fi, ADT_Track_t ** ptr_track)
 	if(fi == NULL || ptr_track == NULL)
 		return ERROR_NULL_POINTER;
 
-
+	fprintf(stdout, "%s\n", "Antes de track_new");
+	fflush(stdout);
 	if((st = ADT_Track_new(ptr_track)) != OK)
 		return st;
+
+	fprintf(stdout, "%s\n", "Despues de track_new");
+	fflush(stdout);
 
 	if((st = read_header_from_mp3(fi, mp3_header)) != OK)
 	{
 		ADT_Track_destroy((void **) &ptr_track);
 		return st;
 	}
+
+	fprintf(stdout, "%s\n", "Despues de read_header");
+	fflush(stdout);
 
 	memcpy(buf, mp3_header + LEXEM_START_TITLE, LEXEM_SPAN_TITLE);
     buf[LEXEM_SPAN_TITLE] = '\0';
@@ -92,6 +99,9 @@ status_t ADT_Track_new_from_mp3_file(FILE * fi, ADT_Track_t ** ptr_track)
 
     memcpy(buf, mp3_header + LEXEM_START_GENRE, LEXEM_SPAN_GENRE);
     ADT_Track_set_genre(*ptr_track, buf[0]);
+
+    fprintf(stdout, "%s\n", "Despues de los memcpy");
+	fflush(stdout);
 
 	return OK;
 }

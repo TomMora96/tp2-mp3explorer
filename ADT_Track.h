@@ -5,13 +5,14 @@
 
 #include <stdio.h>
 #include "types.h"
+#include "mp3.h"
 
 typedef struct {
-	char * name;
-	char * artist;
-	char * album;
+	char name[LEXEM_SPAN_TITLE + 1];
+	char artist[LEXEM_SPAN_ARTIST + 1];
+	char album[LEXEM_SPAN_ALBUM + 1];
 	unsigned short year;
-	char * comment;
+	char comment[LEXEM_SPAN_COMMENT + 1];
 	unsigned char genre;
 } ADT_Track_t;
 

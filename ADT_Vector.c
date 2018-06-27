@@ -204,7 +204,7 @@ status_t ADT_Vector_export_as_xml (const void * v, const void * context, FILE * 
 	for(i = 0; i < v_size; i++)
 	{
 		element = ADT_Vector_get_element (v, i);		
-		(p -> xml_exporter)(p -> elements, context, fo);
+		(p -> xml_exporter)(element, context, fo);
 	}
 
 	return OK;

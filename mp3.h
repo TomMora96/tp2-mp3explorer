@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "types.h"
-#include "ADT_Track.h"
 
 #define MP3_HEADER_SIZE		128
 
@@ -30,7 +29,6 @@
 #define LEXEM_START_GENRE  127
 #define LEXEM_SPAN_GENRE     1
 
-status_t parse_header_to_track(const char * HEADER, ADT_Track_t *ptr_track);
 status_t read_header_from_mp3(FILE * f, char * header);
 
 #endif
