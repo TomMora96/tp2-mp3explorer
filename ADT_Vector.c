@@ -65,7 +65,7 @@ status_t ADT_Vector_delete (ADT_Vector_t ** pp)
 
 	for (i = 0; i < (* pp) -> size; i++)
 	{
-		if ((status = ((*pp) -> *destructor)((* pp) -> elements[i])) != OK)
+		if ((status = ((*pp) -> destructor)((* pp) -> elements[i])) != OK)
 			return status;
 
 		(* pp) -> elements[i] = NULL;
@@ -85,7 +85,7 @@ status_t ADT_Vector_set_destructor (ADT_Vector_t * v, destructor_t pf)
 	if (v == NULL)
 		return ERROR_NULL_POINTER;
 
-	(v -> *destructor) = pf;
+	(v -> destructor) = pf;
 
 	return OK;
 }
@@ -100,10 +100,10 @@ size_t ADT_Vector_get_size(const ADT_Vector_t *pv)
 void * ADT_Vector_get_element(const ADT_Vector_t * v, size_t position)
 {
 	if (v == NULL)
-		return ERROR_NULL_POINTER;
+		return NULL;
 
 	if (position > v -> size)
-		return ERROR_INVALID_INPUT_POSITION;
+		return NULL;
 
 	return v -> elements[position];
 }
@@ -159,7 +159,7 @@ status_t ADT_Vector_export_as_csv (const void * v, const void * p_context, FILE 
 	{
 		element = ADT_Vector_get_element(v, i);
 
-		(p -> *csv_exporter)(element, &delimiter, fo);
+		(p -> csv_exporter)(element, &delimiter, fo);
 	}
 
 	return OK;
@@ -170,7 +170,7 @@ status_t ADT_Vector_set_csv_exporter(ADT_Vector_t * v, exporter_t pf)
 	if(v == NULL || pf == NULL)
 		return ERROR_NULL_POINTER;
 	
-	v -> (csv_exporter) = pf;
+	v -> csv_exporter = pf;
 
 	return OK;
 
@@ -204,7 +204,7 @@ status_t ADT_Vector_export_as_xml (FILE * fo, const void * v, const void * p_con
 	for(i = 0; i < v_size; i++)
 	{
 		element = ADT_Vector_get_element (v, i);		
-		(p -> *xml_exporter)(p -> element, p_context, fo);
+		(p -> xml_exporter)(p -> element, p_context, fo);
 	}
 
 	return OK;
@@ -215,7 +215,7 @@ status_t ADT_Vector_set_xml_exporter(ADT_Vector_t * v, exporter_t pf)
 	if(v == NULL || pf == NULL)
 		return ERROR_NULL_POINTER;
 	
-	v -> (xml_exporter) = pf;
+	v -> xml_exporter = pf;
 
 	return OK;
 

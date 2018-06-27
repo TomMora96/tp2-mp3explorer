@@ -6,12 +6,28 @@
 #include "ADT_Track.h"
 #include "ADT_Vector.h"
 
+status_t (*track_exporters[2]) (const void *, const void *, FILE *)= 
+{
+	(*ADT_Track_export_as_csv),
+	(*ADT_Track_export_as_xml)
+};
+
+
 int main(void)
 {
 	status_t st;
 	ADT_Vector_t * ptr_track_vector;
 	ADT_Track_t * ptr_track1;
 	ADT_Track_t * ptr_track2;
+	FILE * f1;
+	FILE * f2;
+
+	if ((f1 = fopen("track.mp3", "rb")) == NULL)
+		return ERROR_INPUT_FILE_NOT_FOUND;
+
+	if ((f2 = fopen("track.mp3", "rb")) == NULL)
+		return ERROR_INPUT_FILE_NOT_FOUND;
+
 
 	if((st = ADT_Vector_new(&ptr_track_vector)) != OK)
 	{
@@ -19,17 +35,17 @@ int main(void)
 		return st;
 	}
 	
-	if((st = ADT_Vector_set_csv_exporter(ADT_Track_export_as_csv)) != OK)
+	if((st = ADT_Vector_set_csv_exporter(ptr_track_vector, *ADT_Track_export_as_csv)) != OK)
 	{
 		errors_printer(st);
 		return st;
 	}
-	if((st = ADT_Vector_set_xml_exporter(*ADT_Track_export_as_xml)) != OK)
+	if((st = ADT_Vector_set_xml_exporter(ptr_track_vector, *ADT_Track_export_as_xml)) != OK)
 	{
 		errors_printer(st);
 		return st;
 	}
-	if((st = ADT_Vector_set_destructor(*ADT_Track_destroy)) != OK)
+	if((st = ADT_Vector_set_destructor(ptr_track_vector, *ADT_Track_destroy)) != OK)
 	{
 		errors_printer(st);
 		return st;
