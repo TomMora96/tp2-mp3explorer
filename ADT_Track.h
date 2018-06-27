@@ -6,18 +6,42 @@
 #include <stdio.h>
 #include "types.h"
 
+#define MP3_HEADER_SIZE		128
+
+
+#define LEXEM_START_TAG     0
+#define LEXEM_SPAN_TAG      3
+
+#define LEXEM_START_TITLE   3
+#define LEXEM_SPAN_TITLE   30
+
+#define LEXEM_START_ARTIST 33
+#define LEXEM_SPAN_ARTIST  30
+
+#define LEXEM_START_ALBUM  63
+#define LEXEM_SPAN_ALBUM   30
+
+#define LEXEM_START_YEAR   93
+#define LEXEM_SPAN_YEAR     4
+
+#define LEXEM_START_COMMENT 97
+#define LEXEM_SPAN_COMMENT  30
+
+#define LEXEM_START_GENRE  127
+#define LEXEM_SPAN_GENRE     1
+
 typedef struct {
-	char * name;
-	char * artist;
-	char * album;
+	char name[LEXEM_SPAN_TITLE];
+	char artist[LEXEM_SPAN_ARTIST];
+	char album[LEXEM_SPAN_ALBUM];
 	unsigned short year;
-	char * comment;
+	char comment[LEXEM_SPAN_COMMENT];
 	unsigned char genre;
 } ADT_Track_t;
 
 /*-------------------Constructors-------------------*/
 status_t ADT_Track_new(ADT_Track_t * *);
-status_t ADT_Track_new_from_parameters(ADT_Track_t * * ptr_track, char * name, char * artist, char * album, unsigned short year, char * comment, unsigned char genre);
+status_t ADT_Track_new_from_parameters(ADT_Track_t * * ptr_track, char * name, char * artist, char * album, unsigned short year, char * comment, char genre);
 status_t ADT_Track_new_from_mp3_file(FILE *, ADT_Track_t * *);
 
 
