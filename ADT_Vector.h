@@ -12,7 +12,7 @@ typedef struct {
 	size_t size; /* es;ta es la cantidad de elementos que tiene el vector */
 	size_t alloc_size; /* esta es la cantidad de elementos que puede tener el vector */
 	void ** elements; /* tipo de dato en cada casillero del vector */
-	void ** destructor;
+	destructor_t destructor;
 } ADT_Vector_t;
 
 status_t ADT_Vector_new (ADT_Vector_t ** pp);

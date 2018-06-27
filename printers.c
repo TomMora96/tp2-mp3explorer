@@ -12,7 +12,7 @@
 
 status_t ADT_Track_print_as_csv (const void * pv, const void * p_context, FILE * fo)
 {
-	ADT_Track_t *p = (ADT_Track_t *) pv;
+	ADT_Track_t * p = (ADT_Track_t *) pv;
 	char delimiter = *((char *)p_context);
 	char * str = NULL;
 	unsigned char uc;
@@ -40,15 +40,17 @@ status_t ADT_Track_print_as_csv (const void * pv, const void * p_context, FILE *
 }
 
 
-status_t ADT_Vector_export_as_csv (FILE * fo, ADT_Vector_t * v, char delimiter)
+status_t ADT_Vector_export_as_csv (FILE * fo, const void * v, const void * p_context)
 {
+	ADT_Vector_t * p = (ADT_Vector_t *) v;
+	char delimiter = *((char *)p_context);
 	size_t i, v_size;
 	ADT_Track_t * track;
 
 	if(fo == NULL || v == NULL)
 		return ERROR_NULL_POINTER;
 
-	v_size = ADT_Vector_get_size(v);
+	v_size = ADT_Vector_get_size(p);
 
 	for(i = 0; i < v_size; i++)
 	{
@@ -84,13 +86,16 @@ status_t ADT_Track_print_as_xml (const void * pv, const void * p_context, FILE *
 	if ((st = ADT_Track_get_genre(p, &uc)) != OK)
 		return st;
 	fprintf(fo, "\t\t%s%u%s\n", "<genre>", p -> genre, "<genre>");
+	fputs("\t<track>", fo);
 
 	return OK;
 }
 
 
-status_t ADT_Vector_export_as_xml (FILE * fo, ADT_Vector_t * v, char delimiter)
+status_t ADT_Vector_export_as_xml (FILE * fo, const void * v, const void * p_context)
 {
+
+	ADT_Vector_t * p = (ADT_Vector_t *) v;
 	FILE * file_header;
 	int c;
 	size_t i, v_size;
@@ -104,7 +109,7 @@ status_t ADT_Vector_export_as_xml (FILE * fo, ADT_Vector_t * v, char delimiter)
 
 	fclose(file_header);
 
-	v_size = v -> size;
+	v_size = ADT_Vector_get_size(p);
 
 	for(i = 0; i < v_size; i++)
 	{
@@ -116,4 +121,16 @@ status_t ADT_Vector_export_as_xml (FILE * fo, ADT_Vector_t * v, char delimiter)
 	return OK;
 }
 
+status_t export_format (FILE * output_file, ADT_Vector_t * v , exporter_t pf)
+{
+	status_t st;
+
+	if (output_file == NULL || v == NULL || pf == NULL)
+		return ERROR_NULL_POINTER;
+	
+	if ((st = (* pf) (output_file, v, DELIMITER_CSV)) != OK)
+		return st;
+
+	return OK;
+}
 

@@ -29,7 +29,8 @@ typedef enum {
 	FALSE
 } bool_t;
 
-typedef status_t (*destructor_t)(void **);
-typedef status_t (*printer_t)(const void * pv, const void * p_context, FILE * fi);
+typedef status_t (* destructor_t)(void **);
+typedef status_t (* printer_t)(const void * pv, const void * p_context, FILE * fi);
+typedef status_t (* exporter_t)(FILE * fo, const void * v, const void * delimiter);
 
 #endif
