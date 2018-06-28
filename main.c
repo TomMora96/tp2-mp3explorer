@@ -20,7 +20,6 @@ char *sort_criteria[] = {
 	SORT_BY_ALBUM_STR,
 	SORT_BY_GENRE_STR
 };
-
 /* agrego esto */
 
 status_t (*track_exporters[2]) (const void *, const void *, FILE *) = 
