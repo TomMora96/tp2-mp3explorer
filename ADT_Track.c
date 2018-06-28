@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "ADT_Track.h"
+#include "genres.h"
 #include "mp3.h"
 #include "types.h"
 
@@ -60,22 +61,14 @@ status_t ADT_Track_new_from_mp3_file(FILE * fi, ADT_Track_t ** ptr_track)
 	if(fi == NULL || ptr_track == NULL)
 		return ERROR_NULL_POINTER;
 
-	fprintf(stdout, "%s\n", "Antes de track_new");
-	fflush(stdout);
 	if((st = ADT_Track_new(ptr_track)) != OK)
 		return st;
-
-	fprintf(stdout, "%s\n", "Despues de track_new");
-	fflush(stdout);
 
 	if((st = read_header_from_mp3(fi, mp3_header)) != OK)
 	{
 		ADT_Track_destroy((void **) &ptr_track);
 		return st;
 	}
-
-	fprintf(stdout, "%s\n", "Despues de read_header");
-	fflush(stdout);
 
 	memcpy(buf, mp3_header + LEXEM_START_TITLE, LEXEM_SPAN_TITLE);
     buf[LEXEM_SPAN_TITLE] = '\0';
@@ -100,8 +93,6 @@ status_t ADT_Track_new_from_mp3_file(FILE * fi, ADT_Track_t ** ptr_track)
     memcpy(buf, mp3_header + LEXEM_START_GENRE, LEXEM_SPAN_GENRE);
     ADT_Track_set_genre(*ptr_track, buf[0]);
 
-    fprintf(stdout, "%s\n", "Despues de los memcpy");
-	fflush(stdout);
 
 	return OK;
 }
@@ -142,26 +133,24 @@ status_t ADT_Track_export_as_csv (const void * pv, const void * p_context, FILE 
 {
 	ADT_Track_t * p = (ADT_Track_t *) pv;
 	char delimiter = *((char *)p_context);
-	char * str = NULL;
-	unsigned char uc;
 	status_t st;
 
 	if (pv == NULL || p_context == NULL || fo == NULL)
 		return ERROR_NULL_POINTER;
 
-	if ((st = ADT_Track_get_name(p, &str)) != OK)
-		return st;
-	fprintf(fo, "%s%c", str, delimiter);
+	
+	fprintf(fo, "%s%c", p -> name, delimiter);
 
-	if ((st = ADT_Track_get_artist(p, &str)) != OK)
-		return st;
-	fprintf(fo, "%s%c", str, delimiter);
+	fprintf(fo, "%s%c", p -> artist, delimiter);
 
-	if ((st = ADT_Track_get_genre(p, &uc)) != OK)
-		return st;
-	fprintf(fo, "%u", uc);
 
-	printf("\n");
+	if(p-> genre > MAX_GENRES - 1)
+		fprintf(fo, "%u", p -> genre);
+
+	else
+		fprintf(fo, "%s", genres[p -> genre]);
+	
+	fprintf(fo, "\n");
 
 
 	return OK;
@@ -170,6 +159,7 @@ status_t ADT_Track_export_as_csv (const void * pv, const void * p_context, FILE 
 status_t ADT_Track_export_as_xml (const void * pv, const void * p_context, FILE * fo)
 {
 	ADT_Track_t *p = (ADT_Track_t *) pv;
+	char * * context = (char * *) p_context;
 	char * str = NULL;
 	unsigned char uc;
 	status_t st;
@@ -177,20 +167,23 @@ status_t ADT_Track_export_as_xml (const void * pv, const void * p_context, FILE 
 	if (pv == NULL || p_context == NULL || fo == NULL)
 		return ERROR_NULL_POINTER;
 
-	if ((st = ADT_Track_get_name(p, &str)) != OK)
-		return st;
-	fputs("<tracks>", fo);
-	fputs("\t<track>", fo);
-	fprintf(fo, "\t\t%s%s%s\n", "<name>", p -> name, "<name>");
+	/*context[2]: Tag de track*/
+	fprintf(fo, "\t%c%s%c\n", '<', context[2], '>');
 
-	if ((st = ADT_Track_get_artist(p, &str)) != OK)
-		return st;
-	fprintf(fo, "\t\t%s%s%s\n", "<artist>", p -> artist, "<artist>");
+	/*context[3]: Tag de name*/
+	fprintf(fo, "\t\t%c%s%c%s%c%c%s%c\n", '<', context[3], '>', p -> name, '<', '\\',  context[3], '>');
 
-	if ((st = ADT_Track_get_genre(p, &uc)) != OK)
-		return st;
-	fprintf(fo, "\t\t%s%u%s\n", "<genre>", p -> genre, "<genre>");
-	fputs("\t<track>", fo);
+	/*context[4]: Tag de artist*/
+	fprintf(fo, "\t\t%c%s%c%s%c%c%s%c\n", '<', context[4], '>', p -> artist, '<', '\\',  context[4], '>');
+
+	/*context[5]: Tag de genre*/
+	if(p-> genre > MAX_GENRES - 1)
+		fprintf(fo, "\t\t%c%s%c%u%c%c%s%c\n", '<', context[5], '>', p -> genre, '<', '\\',  context[5], '>');
+
+	else
+		fprintf(fo, "\t\t%c%s%c%s%c%c%s%c\n", '<', context[5], '>', genres[p -> genre], '<', '\\',  context[5], '>');
+	
+	fprintf(fo, "\t%c%c%s%c\n", '<', '\\', context[2], '>');
 
 	return OK;
 }
@@ -251,12 +244,12 @@ status_t ADT_Track_get_comment(ADT_Track_t *track, char * *comment)
 	return OK;
 }
 
-status_t ADT_Track_get_genre(ADT_Track_t *track, unsigned char *comment)
+status_t ADT_Track_get_genre(ADT_Track_t *track, unsigned char *genre)
 {
-	if(track == NULL || comment == NULL)
+	if(track == NULL || genre == NULL)
 		return ERROR_NULL_POINTER;
 
-	*comment = *track -> comment;
+	*genre = track -> genre;
 
 	return OK;
 }

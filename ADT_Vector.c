@@ -143,7 +143,6 @@ status_t ADT_Vector_add_element(ADT_Vector_t * v, void * element)
 status_t ADT_Vector_export_as_csv (const void * v, const void * p_context, FILE * fo)
 {
 	ADT_Vector_t * p = (ADT_Vector_t *) v;
-	char delimiter = *((char *)p_context);
 	size_t i, v_size;
 	void * element;
 
@@ -159,7 +158,7 @@ status_t ADT_Vector_export_as_csv (const void * v, const void * p_context, FILE 
 	{
 		element = ADT_Vector_get_element(v, i);
 
-		(p -> csv_exporter)(element, &delimiter, fo);
+		(p -> csv_exporter)(element, p_context, fo);
 	}
 
 	return OK;
@@ -176,10 +175,11 @@ status_t ADT_Vector_set_csv_exporter(ADT_Vector_t * v, exporter_t pf)
 
 }
 
-status_t ADT_Vector_export_as_xml (const void * v, const void * context, FILE * fo)
+status_t ADT_Vector_export_as_xml (const void * v, const void * p_context, FILE * fo)
 {
 
 	ADT_Vector_t * p = (ADT_Vector_t *) v;
+	char * * context = (char * *) p_context;
 	FILE * file_header;
 	int c;
 	size_t i, v_size;
@@ -191,21 +191,28 @@ status_t ADT_Vector_export_as_xml (const void * v, const void * context, FILE * 
 	if(p -> xml_exporter == NULL)
 		return ERROR_XML_EXPORTER_NOT_SETTED;
 
-	if ((file_header = fopen(XML_HEADER, "rt")) == NULL)
+	/*if ((file_header = fopen(XML_HEADER, "rt")) == NULL)
 		return ERROR_INPUT_FILE_NOT_FOUND;
 
 	while((c = fgetc(file_header)) != EOF && c)
 		fputc(c, fo);
 
-	fclose(file_header);
+	fclose(file_header);*/
+
+	/*context[0]: Header*/
+	fprintf(fo, "%s\n", context[0]);
+
+	/*context[1]: Tag englobador*/
+	fprintf(fo, "%c%s%c\n", '<', context[1], '>');
 
 	v_size = ADT_Vector_get_size(p);
 
 	for(i = 0; i < v_size; i++)
 	{
 		element = ADT_Vector_get_element (v, i);		
-		(p -> xml_exporter)(element, context, fo);
+		(p -> xml_exporter)(element, p_context, fo);
 	}
+	fprintf(fo, "%c%c%s%c\n", '<', '\\', context[1], '>');
 
 	return OK;
 }

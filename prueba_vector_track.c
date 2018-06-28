@@ -24,12 +24,20 @@ int main(void)
 	FILE * f1;
 	FILE * f2;
 
+	char csv_context = '|';
+	char * xml_context[] = {"<?xml version=\"1.0\" ?>", "tracks", "track", "name", "artist", "genre"};
+
 	if ((f1 = fopen("track.mp3", "rb")) == NULL)
+	{
+		errors_printer(st);
 		return ERROR_INPUT_FILE_NOT_FOUND;
+	}
 
-	if ((f2 = fopen("track.mp3", "rb")) == NULL)
+	if ((f2 = fopen("track2.mp3", "rb")) == NULL)
+	{
+		errors_printer(st);
 		return ERROR_INPUT_FILE_NOT_FOUND;
-
+	}
 
 	if((st = ADT_Vector_new(&ptr_track_vector)) != OK)
 	{
@@ -37,6 +45,7 @@ int main(void)
 		return st;
 	}
 	
+
 	if((st = ADT_Vector_set_csv_exporter(ptr_track_vector, *ADT_Track_export_as_csv)) != OK)
 	{
 		errors_printer(st);
@@ -52,7 +61,6 @@ int main(void)
 		errors_printer(st);
 		return st;
 	}
-
 	
 	if((st = ADT_Track_new_from_mp3_file(f1, &ptr_track1)) != OK)
 	{
@@ -76,12 +84,12 @@ int main(void)
 		return st;
 	}
 
-	if((st = ADT_Vector_export_as_xml(ptr_track_vector, "SIN FUNCIONALIDAD", stdout)) != OK)
+	if((st = ADT_Vector_export_as_csv(ptr_track_vector, (void *) &csv_context, stdout)) != OK)
 	{
 		errors_printer(st);
 		return st;
 	}
-	if((st = ADT_Vector_export_as_xml(ptr_track_vector, "SIN FUNCIONALIDAD", stdout)) != OK)
+	if((st = ADT_Vector_export_as_xml(ptr_track_vector, (void *) &xml_context, stdout)) != OK)
 	{
 		errors_printer(st);
 		return st;
