@@ -160,8 +160,6 @@ status_t ADT_Track_export_as_xml (const void * pv, const void * p_context, FILE 
 {
 	ADT_Track_t *p = (ADT_Track_t *) pv;
 	char * * context = (char * *) p_context;
-	char * str = NULL;
-	unsigned char uc;
 	status_t st;
 
 	if (pv == NULL || p_context == NULL || fo == NULL)
@@ -311,28 +309,26 @@ status_t ADT_Track_set_genre(ADT_Track_t * ptr_track, unsigned char genre)
 
 
 /*-------------------Comparators--------------------*/
-int ADT_Track_compare_by_name(void * ptr_track1, void * ptr_track2)
+int ADT_Track_compare_by_name(const void * ptr_track1, const void * ptr_track2)
 {
-	ADT_Track_t * p1 = (ADT_Track_t *) ptr_track1;
-	ADT_Track_t * p2 = (ADT_Track_t *) ptr_track2;
+	ADT_Track_t ** p1 = (ADT_Track_t **) ptr_track1;
+	ADT_Track_t ** p2 = (ADT_Track_t **) ptr_track2;
 
-	return strcmp(p1 -> name, p2 -> name);
+	return strcmp((*p1) -> name, (*p2) -> name);
 }
 
-int ADT_Track_compare_by_artist(void * ptr_track1, void * ptr_track2)
+int ADT_Track_compare_by_artist(const void * ptr_track1, const void * ptr_track2)
 {
-	ADT_Track_t * p1 = (ADT_Track_t *) ptr_track1;
-	ADT_Track_t * p2 = (ADT_Track_t *) ptr_track2;
+	ADT_Track_t * *p1 = (ADT_Track_t **) ptr_track1;
+	ADT_Track_t * *p2 = (ADT_Track_t **) ptr_track2;
 
-	return strcmp(p1 -> artist, p2 -> artist);
+	return strcmp((*p1) -> artist, (*p2) -> artist);
 }
 
-int ADT_Track_compare_by_genre(void * ptr_track1, void * ptr_track2)
+int ADT_Track_compare_by_genre(const void * ptr_track1, const void * ptr_track2)
 {
-	/*Es posible que se quiera que la comparacion entre generos sea lexicografica.*/
-	/*En tal caso habría que pasar al literal de genre y hacer strcmp.            */
-	ADT_Track_t * p1 = (ADT_Track_t *) ptr_track1;
-	ADT_Track_t * p2 = (ADT_Track_t *) ptr_track2;
+	ADT_Track_t ** p1 = (ADT_Track_t **) ptr_track1;
+	ADT_Track_t ** p2 = (ADT_Track_t **) ptr_track2;
 
-	return p1 -> genre - p2 -> genre;
+	return (*p1) -> genre - (*p2) -> genre;
 }

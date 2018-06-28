@@ -6,7 +6,7 @@
 #include "ADT_Vector.h"
 #include "types.h"
 
-
+#include "ADT_Track.h"
 /*-------------------Constructors-------------------*/
 status_t ADT_Vector_new (ADT_Vector_t ** pp) 
 {
@@ -80,16 +80,6 @@ status_t ADT_Vector_delete (ADT_Vector_t ** pp)
 
 }
 
-status_t ADT_Vector_set_destructor (ADT_Vector_t * v, destructor_t pf)
-{
-	if (v == NULL)
-		return ERROR_NULL_POINTER;
-
-	(v -> destructor) = pf;
-
-	return OK;
-}
-
 
 /*-------------------Getters------------------------*/
 size_t ADT_Vector_get_size(const ADT_Vector_t *pv)
@@ -157,22 +147,10 @@ status_t ADT_Vector_export_as_csv (const void * v, const void * p_context, FILE 
 	for(i = 0; i < v_size; i++)
 	{
 		element = ADT_Vector_get_element(v, i);
-
 		(p -> csv_exporter)(element, p_context, fo);
 	}
 
 	return OK;
-}
-
-status_t ADT_Vector_set_csv_exporter(ADT_Vector_t * v, exporter_t pf)
-{
-	if(v == NULL || pf == NULL)
-		return ERROR_NULL_POINTER;
-	
-	v -> csv_exporter = pf;
-
-	return OK;
-
 }
 
 status_t ADT_Vector_export_as_xml (const void * v, const void * p_context, FILE * fo)
@@ -190,14 +168,6 @@ status_t ADT_Vector_export_as_xml (const void * v, const void * p_context, FILE 
 
 	if(p -> xml_exporter == NULL)
 		return ERROR_XML_EXPORTER_NOT_SETTED;
-
-	/*if ((file_header = fopen(XML_HEADER, "rt")) == NULL)
-		return ERROR_INPUT_FILE_NOT_FOUND;
-
-	while((c = fgetc(file_header)) != EOF && c)
-		fputc(c, fo);
-
-	fclose(file_header);*/
 
 	/*context[0]: Header*/
 	fprintf(fo, "%s\n", context[0]);
@@ -217,6 +187,44 @@ status_t ADT_Vector_export_as_xml (const void * v, const void * p_context, FILE 
 	return OK;
 }
 
+
+/*-------------------Sorter-------------------------*/
+status_t ADT_Vector_sort(ADT_Vector_t * v)
+{
+	if(v == NULL)
+		return ERROR_NULL_POINTER;
+
+	if(v -> comparator == NULL)
+		return ERROR_COMPARATOR_NOT_SETTED;
+
+	qsort(v -> elements, v -> size, sizeof(v -> elements[0]), v -> comparator);
+
+	return OK;
+}
+
+
+/*-------------------Setters------------------------*/
+status_t ADT_Vector_set_destructor (ADT_Vector_t * v, destructor_t pf)
+{
+	if (v == NULL)
+		return ERROR_NULL_POINTER;
+
+	(v -> destructor) = pf;
+
+	return OK;
+}
+
+status_t ADT_Vector_set_csv_exporter(ADT_Vector_t * v, exporter_t pf)
+{
+	if(v == NULL || pf == NULL)
+		return ERROR_NULL_POINTER;
+	
+	v -> csv_exporter = pf;
+
+	return OK;
+
+}
+
 status_t ADT_Vector_set_xml_exporter(ADT_Vector_t * v, exporter_t pf)
 {
 	if(v == NULL || pf == NULL)
@@ -226,4 +234,14 @@ status_t ADT_Vector_set_xml_exporter(ADT_Vector_t * v, exporter_t pf)
 
 	return OK;
 
+}
+
+status_t ADT_Vector_set_comparator(ADT_Vector_t * v, comparator_t pf)
+{
+	if(v == NULL || pf == NULL)
+		return ERROR_NULL_POINTER;
+	
+	v -> comparator = pf;
+
+	return OK;
 }

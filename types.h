@@ -12,6 +12,7 @@ typedef enum {
 	ERROR_INPUT_FILE_NOT_FOUND = 5,
 	ERROR_XML_EXPORTER_NOT_SETTED,
 	ERROR_CSV_EXPORTER_NOT_SETTED,
+	ERROR_COMPARATOR_NOT_SETTED,
 	ERROR_INVALID_TRACK_PARAMETER
 } status_t;
 
@@ -34,5 +35,6 @@ typedef enum {
 
 typedef status_t (* destructor_t)(void **);
 typedef status_t (* exporter_t)(const void *, const void *, FILE *);
+typedef int (* comparator_t)(const void *, const void *);
 
 #endif
