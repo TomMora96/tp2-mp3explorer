@@ -25,33 +25,19 @@ status_t load_vector (ADT_Vector_t ** ptr_track_vector, config_t *config)
 	size_t amf = config -> amount_files, i;
 
 	if((st = ADT_Vector_new(ptr_track_vector)) != OK)
-	{
-		errors_printer(st);
 		return st;
-	}
 
 	if((st = ADT_Vector_set_csv_exporter(*ptr_track_vector, *ADT_Track_export_as_csv)) != OK)
-	{
-		errors_printer(st);
 		return st;
-	}
+
 	if((st = ADT_Vector_set_xml_exporter(*ptr_track_vector, *ADT_Track_export_as_xml)) != OK)
-	{
-		errors_printer(st);
 		return st;
-	}
+
 	if((st = ADT_Vector_set_destructor(*ptr_track_vector, *ADT_Track_destroy)) != OK)
-	{
-		errors_printer(st);
 		return st;
-	}
 	
 	if((st = ADT_Vector_set_comparator(*ptr_track_vector, *(track_comparators[config -> sort_criterion]))) != OK)
-	{
-		errors_printer(st);
 		return st;
-	}
-
 
 	for (i = 0; i < amf; i++)
 	{
