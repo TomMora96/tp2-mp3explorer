@@ -73,7 +73,8 @@ status_t ADT_Track_new_from_mp3_file(FILE * fi, ADT_Track_t ** ptr_track)
 	}
 
 	memcpy(buf, mp3_header + LEXEM_START_TITLE, LEXEM_SPAN_TITLE);
-    buf[LEXEM_SPAN_TITLE] = '\0';
+    buf[LEXEM_SPAN_ARTIST] = '\0';
+    printf("%s\n", buf);
     ADT_Track_set_name(*ptr_track, buf);
 
     memcpy(buf, mp3_header + LEXEM_START_ARTIST, LEXEM_SPAN_ARTIST);
@@ -253,7 +254,7 @@ status_t ADT_Track_set_name(ADT_Track_t * ptr_track, const char * name)
 {
 	if(ptr_track == NULL || name == NULL)
 		return ERROR_NULL_POINTER;
-
+	printf("%s%s\n", "name a setear: ", name);
 	strcpy(ptr_track -> name, name);
 	return OK;	
 }
@@ -262,7 +263,7 @@ status_t ADT_Track_set_artist(ADT_Track_t * ptr_track, const char * artist)
 {
 	if(ptr_track == NULL || artist == NULL)
 		return ERROR_NULL_POINTER;
-
+	printf("%s%s\n", "Artist a setear: ", artist);
 	strcpy(ptr_track -> artist, artist);
 	return OK;	
 }

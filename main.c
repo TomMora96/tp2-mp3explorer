@@ -16,10 +16,10 @@
 extern char * xml_context[];
 extern char csv_context;
 
-status_t (*track_exporters[2]) (const void *, const void *, FILE *)  = 
+status_t (*vector_exporters[2]) (const void *, const void *, FILE *)  = 
 {
-	(*ADT_Track_export_as_csv),
-	(*ADT_Track_export_as_xml)
+	(*ADT_Vector_export_as_csv),
+	(*ADT_Vector_export_as_xml)
 };
 
 char *output_formats[] = {
@@ -51,7 +51,14 @@ int main (int argc, char *argv[])
 	if ((fo = fopen(config.output_file_name, "wt")) == NULL)
 		return ERROR_INPUT_FILE_NOT_FOUND;
 
-	if ((st = load_vector(&ptr_track_vector, &config)) != OK)
+	if ((st = initialize_vector(&ptr_track_vector, &config)) != OK)
+	{
+		fclose(fo);
+		errors_printer(st);
+		return st;
+	}
+
+	if ((st = load_mp3_tracks_from_files_to_vector(config.input_files_names, config.input_files_amount, &ptr_track_vector)) != OK)
 	{
 		fclose(fo);
 		errors_printer(st);
@@ -142,7 +149,7 @@ status_t validate_arguments (int argc, char *argv[], config_t *config)
 
 	config -> output_file_name = argv[CMD_ARG_OUTPUT_FILE_VALUE_POS];
 
-	config -> amount_files = argc - CMD_MIN_INPUT_ARGS;
+	config -> input_files_amount = argc - CMD_MIN_INPUT_ARGS;
 
 	config -> input_files_names = argv + CMD_MIN_INPUT_ARGS;
 
