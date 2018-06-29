@@ -13,6 +13,7 @@
 #define MSG_ERROR_CSV_EXPORTER_NOT_SETTED "Tried to export vector to CSV without setting the correct exporter function."
 #define MSG_ERROR_COMPARATOR_NOT_SETTED "Tried to sort vector without setting a comparator function."
 #define MSG_ERROR_INVALID_TRACK_PARAMETER "Tried to create new track from invalid parameters."
+#define MSG_ERROR_CLOSE_FILES "Can not close file."
 
 status_t errors_printer (status_t status);
 

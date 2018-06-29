@@ -5,8 +5,10 @@
 
 #include "ADT_Vector.h"
 #include "types.h"
+#include "xml.h"
+#include "csv.h"
 
-#include "ADT_Track.h"
+
 /*-------------------Constructors-------------------*/
 status_t ADT_Vector_new (ADT_Vector_t ** pp) 
 {
@@ -27,6 +29,11 @@ status_t ADT_Vector_new (ADT_Vector_t ** pp)
 
 	(*pp) -> alloc_size = ADT_INIT_CHOP;
 	(*pp) -> size = 0;
+
+	(*pp) -> destructor = NULL;
+	(*pp) -> xml_exporter = NULL;
+	(*pp) -> csv_exporter = NULL;
+	(*pp) -> comparator = NULL;
 
 	for (i = 0; i < ADT_INIT_CHOP; i++)
 		((*pp) -> elements)[i] = NULL;
@@ -136,6 +143,7 @@ status_t ADT_Vector_export_as_csv (const void * v, const void * p_context, FILE 
 	size_t i, v_size;
 	void * element;
 
+
 	if(fo == NULL || v == NULL || p_context == NULL)
 		return ERROR_NULL_POINTER;
 
@@ -155,34 +163,36 @@ status_t ADT_Vector_export_as_csv (const void * v, const void * p_context, FILE 
 
 status_t ADT_Vector_export_as_xml (const void * v, const void * p_context, FILE * fo)
 {
-
+	FILE * header_file, * footer_file;
+	int c;
+	size_t i, vec_size;
 	ADT_Vector_t * p = (ADT_Vector_t *) v;
 	char * * context = (char * *) p_context;
-	FILE * file_header;
-	int c;
-	size_t i, v_size;
 	void * element;
 
-	if(fo == NULL || v == NULL || context == NULL)
-		return ERROR_NULL_POINTER;
+	if((header_file = fopen(XML_HEADER, "rt")) == NULL)
+		return ERROR_INPUT_FILE_NOT_FOUND;
 
-	if(p -> xml_exporter == NULL)
-		return ERROR_XML_EXPORTER_NOT_SETTED;
+	while((c = fgetc(header_file)) != EOF && c)
+		fputc(c, fo);
 
-	/*context[0]: Header*/
-	fprintf(fo, "%s\n", context[0]);
+	fclose(header_file);
 
-	/*context[1]: Tag englobador*/
-	fprintf(fo, "%c%s%c\n", '<', context[1], '>');
+	vec_size = p -> alloc_size;
 
-	v_size = ADT_Vector_get_size(p);
-
-	for(i = 0; i < v_size; i++)
+	for(i = 0; i < vec_size; i++)
 	{
 		element = ADT_Vector_get_element (v, i);		
-		(p -> xml_exporter)(element, p_context, fo);
+		(p -> xml_exporter)(element, context, fo);
 	}
-	fprintf(fo, "%c%c%s%c\n", '<', '\\', context[1], '>');
+
+	if((footer_file = fopen(XML_FOOTER, "rt")) == NULL)
+		return ERROR_INPUT_FILE_NOT_FOUND;
+
+	while((c = fgetc(footer_file)) != EOF && c)
+		fputc(c, fo);
+
+	fclose(footer_file);
 
 	return OK;
 }

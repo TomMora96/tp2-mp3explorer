@@ -12,7 +12,7 @@
 #define LEXEM_SPAN_TAG      3
 
 #define LEXEM_START_TITLE   3
-#define LEXEM_SPAN_TITLE   30
+#define LEXEM_SPAN_TITLE   40
 
 #define LEXEM_START_ARTIST 33
 #define LEXEM_SPAN_ARTIST  30

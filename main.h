@@ -3,6 +3,11 @@
 #ifndef MAIN__H
 #define MAIN__H
 
+#include <stdio.h>
+#include "types.h"
+#include "config.h"
+#include "ADT_Vector.h"
+
 #define CMD_MIN_INPUT_ARGS 7
 
 #define CMD_ARG_OUTPUT_FORMAT_TOKEN_POS 1
@@ -27,6 +32,7 @@
 #define OUTPUT_FILE_TOKEN "-out"
 
 status_t validate_arguments (int argc, char *argv[], config_t *config);
+status_t load_vector (ADT_Vector_t ** ptr_track_vector, config_t *config);
 
 config_t config;
 

@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "ADT_Track.h"
 #include "genres.h"
 #include "mp3.h"
 #include "types.h"
-
+#include "xml.h"
+#include "csv.h"
 
 /*-------------------Constructors-------------------*/
 status_t ADT_Track_new(ADT_Track_t ** ptr_track)
@@ -133,7 +135,6 @@ status_t ADT_Track_export_as_csv (const void * pv, const void * p_context, FILE 
 {
 	ADT_Track_t * p = (ADT_Track_t *) pv;
 	char delimiter = *((char *)p_context);
-	status_t st;
 
 	if (pv == NULL || p_context == NULL || fo == NULL)
 		return ERROR_NULL_POINTER;
@@ -160,32 +161,26 @@ status_t ADT_Track_export_as_xml (const void * pv, const void * p_context, FILE 
 {
 	ADT_Track_t *p = (ADT_Track_t *) pv;
 	char * * context = (char * *) p_context;
-	status_t st;
 
 	if (pv == NULL || p_context == NULL || fo == NULL)
 		return ERROR_NULL_POINTER;
 
-	/*context[2]: Tag de track*/
-	fprintf(fo, "\t%c%s%c\n", '<', context[2], '>');
+	fprintf(fo, "\t%c%s%c\n", '<', context[XML_CONTEXT_TRACK_TAG_POS], '>');
 
-	/*context[3]: Tag de name*/
-	fprintf(fo, "\t\t%c%s%c%s%c%c%s%c\n", '<', context[3], '>', p -> name, '<', '\\',  context[3], '>');
+	fprintf(fo, "\t\t%c%s%c%s%c%c%s%c\n", '<', context[XML_CONTEXT_NAME_TAG_POS], '>', p -> name, '<', '\\',  context[XML_CONTEXT_NAME_TAG_POS], '>');
 
-	/*context[4]: Tag de artist*/
-	fprintf(fo, "\t\t%c%s%c%s%c%c%s%c\n", '<', context[4], '>', p -> artist, '<', '\\',  context[4], '>');
+	fprintf(fo, "\t\t%c%s%c%s%c%c%s%c\n", '<', context[XML_CONTEXT_ARTIST_TAG_POS], '>', p -> artist, '<', '\\',  context[XML_CONTEXT_ARTIST_TAG_POS], '>');
 
-	/*context[5]: Tag de genre*/
 	if(p-> genre > MAX_GENRES - 1)
-		fprintf(fo, "\t\t%c%s%c%u%c%c%s%c\n", '<', context[5], '>', p -> genre, '<', '\\',  context[5], '>');
+		fprintf(fo, "\t\t%c%s%c%u%c%c%s%c\n", '<', context[XML_CONTEXT_GENRE_TAG_POS], '>', p -> genre, '<', '\\',  context[XML_CONTEXT_GENRE_TAG_POS], '>');
 
 	else
-		fprintf(fo, "\t\t%c%s%c%s%c%c%s%c\n", '<', context[5], '>', genres[p -> genre], '<', '\\',  context[5], '>');
+		fprintf(fo, "\t\t%c%s%c%s%c%c%s%c\n", '<', context[XML_CONTEXT_GENRE_TAG_POS], '>', genres[p -> genre], '<', '\\',  context[XML_CONTEXT_GENRE_TAG_POS], '>');
 	
-	fprintf(fo, "\t%c%c%s%c\n", '<', '\\', context[2], '>');
+	fprintf(fo, "\t%c%c%s%c\n", '<', '\\', context[XML_CONTEXT_TRACK_TAG_POS], '>');
 
 	return OK;
 }
-
 
 /*-------------------Getters------------------------*/
 status_t ADT_Track_get_name(ADT_Track_t *track, char * *name)

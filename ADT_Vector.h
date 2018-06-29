@@ -4,7 +4,6 @@
 #define ADT_VECTOR__H
 
 #include "types.h"
-#define XML_HEADER "xml_header.txt"
 
 #define ADT_INIT_CHOP 10
 #define ADT_CHOP_SIZE 20

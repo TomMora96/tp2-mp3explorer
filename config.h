@@ -10,6 +10,7 @@ typedef struct {
 	sort_criteria_t sort_criterion;
 	char * output_file_name;
 	size_t amount_files;
+	char ** input_files_names;
 } config_t;
 
 #endif

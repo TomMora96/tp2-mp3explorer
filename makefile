@@ -1,30 +1,15 @@
 # makefile
 
-CFLAGS = -Wall
+CFLAGS = -ansi -pedantic -Wall
 CC = gcc
 
-all: make_main clean
+all: make_mp3explorer clean
 
-prueba_track: make_prueba_track
 
-prueba_vector_track: make_prueba_vector_track
+make_mp3explorer: main.o errors.o config.o ADT_Track.o ADT_Vector.o csv.o genres.o mp3.o mp3explorer.o xml.o
+	$(CC) $(CFLAGS) -o mp3explorer main.o errors.o config.o ADT_Track.o ADT_Vector.o csv.o genres.o mp3.o mp3explorer.o xml.o
 
-make_prueba_vector_track: prueba_vector_track.o mp3.o ADT_Track.o  ADT_Vector.o errors.o
-	gcc -ansi -pedantic -Wall -o prueba_vector_track prueba_vector_track.o ADT_Track.o ADT_Vector.o mp3.o errors.o
-
-make_prueba_track: mp3.o prueba_track.o ADT_Track.o errors.o
-	$(CC) $(CFLAGS) -o prueba_track prueba_track.o ADT_Track.o mp3.o errors.o
-
-make_main: main.o errors.o config.o 
-	$(CC) $(CFLAGS) -o main main.o errors.o config.o
-
-prueba_track.o: prueba_track.c ADT_Track.h mp3.h types.h errors.h
-	$(CC) $(CFLAGS) -o prueba_track.o -c prueba_track.c
-
-prueba_vector_track.o: prueba_vector_track.c types.h errors.h ADT_Vector.h ADT_Track.h
-	gcc -ansi -pedantic -Wall -o prueba_vector_track.o -c prueba_vector_track.c
-
-main.o: main.c main.h config.h types.h
+main.o: main.c main.h mp3explorer.h types.h errors.h ADT_Track.h ADT_Vector.h config.h mp3.h xml.h csv.h
 	$(CC) $(CFLAGS) -o main.o -c main.c
 
 errors.o: errors.c types.h errors.h
@@ -35,6 +20,21 @@ config.o: config.c config.h
 
 ADT_Track.o: ADT_Track.c ADT_Track.h mp3.h types.h
 	$(CC) $(CFLAGS) -o ADT_Track.o -c ADT_Track.c
+
+ADT_Vector.o: ADT_Vector.c ADT_Vector.h types.h xml.h csv.h
+	$(CC) $(CFLAGS) -o ADT_Vector.o -c ADT_Vector.c
+
+csv.o: csv.c csv.h
+	$(CC) $(CFLAGS) -o csv.o -c csv.c
+
+genres.o: genres.c genres.h
+	$(CC) $(CFLAGS) -o genres.o -c genres.c
+
+mp3explorer.o: mp3explorer.c types.h errors.h main.h ADT_Vector.h ADT_Track.h config.h
+	$(CC) $(CFLAGS) -o mp3explorer.o -c mp3explorer.c
+
+xml.o: xml.c xml.h
+	$(CC) $(CFLAGS) -o xml.o -c xml.c
 
 mp3.o: mp3.c mp3.h ADT_Track.h types.h
 	$(CC) $(CFLAGS) -o mp3.o -c mp3.c

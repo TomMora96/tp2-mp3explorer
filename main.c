@@ -1,14 +1,26 @@
-/* main.c */
-
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
-#include "config.h"
-#include "types.h"
 #include "main.h"
+#include "mp3explorer.h"
+#include "types.h"
 #include "errors.h"
-#include "ADT_Vector.h"
 #include "ADT_Track.h"
+#include "ADT_Vector.h"
+#include "config.h"
+#include "mp3.h"
+#include "xml.h"
+#include "csv.h"
+
+extern char * xml_context[];
+extern char csv_context;
+
+status_t (*track_exporters[2]) (const void *, const void *, FILE *)  = 
+{
+	(*ADT_Track_export_as_csv),
+	(*ADT_Track_export_as_xml)
+};
 
 char *output_formats[] = {
 	OUTPUT_FORMAT_CSV_STR,
@@ -20,37 +32,66 @@ char *sort_criteria[] = {
 	SORT_BY_ALBUM_STR,
 	SORT_BY_GENRE_STR
 };
-/* agrego esto */
-
-status_t (*track_exporters[2]) (const void *, const void *, FILE *) = 
-{
-	(* ADT_Track_export_as_csv),
-	(* ADT_Track_export_as_xml)
-};
-
-/* hasta aca */
-
 
 extern config_t config;
 
 int main (int argc, char *argv[])
 {
 	status_t st;
-	char * files_names[MAX_NUMBER_FILES];
+	ADT_Vector_t * ptr_track_vector = NULL;
+	FILE * fo;
+
 
 	if ((st = validate_arguments(argc, argv, &config)) != OK)
 	{
 		errors_printer(st);
 		return st;
 	}
-	/*
 
-	if ((st = arguments_to_vector(&config, )))
+	if ((fo = fopen(config.output_file_name, "wt")) == NULL)
+		return ERROR_INPUT_FILE_NOT_FOUND;
 
-	status_t arguments_to_vector (config_t config, char * files_names[])
-*/
+	if ((st = load_vector(&ptr_track_vector, &config)) != OK)
+	{
+		fclose(fo);
+		errors_printer(st);
+		return st;
+	}
 
-	return 0;
+	ADT_Vector_sort(ptr_track_vector);
+
+	switch (config.output_format)
+	{
+		case output_format_csv:
+		if((st = ADT_Vector_export_as_csv(ptr_track_vector, (void *) &csv_context, fo)) != OK)
+		{
+			fclose(fo);
+			errors_printer(st);
+			return st;
+		}
+		break;
+
+		case output_format_xml:
+		if((st = ADT_Vector_export_as_xml(ptr_track_vector, (void *) &xml_context, fo)) != OK)
+		{
+			fclose(fo);
+			errors_printer(st);
+			return st;
+		}
+		break;
+
+		default:
+		fclose(fo);
+		return ERROR_PROGRAM_INVOCATION;
+	}
+
+	if (fclose(fo) == EOF)
+	{
+		st = ERROR_CLOSE_FILES;
+		errors_printer(st);
+	}
+
+	return OK;
 }
 
 status_t validate_arguments (int argc, char *argv[], config_t *config)
@@ -103,93 +144,8 @@ status_t validate_arguments (int argc, char *argv[], config_t *config)
 
 	config -> amount_files = argc - CMD_MIN_INPUT_ARGS;
 
-	return OK;
-}
+	config -> input_files_names = argv + CMD_MIN_INPUT_ARGS;
 
-
-status_t arguments_to_vector (config_t config, char * files_names[])
-{
-	status_t st;
-	ADT_Vector_t * ptr_track_vector;
-	ADT_Track_t * ptr_track;
-	FILE * file;
-	size_t amf = config.amount_files, i;
-	char csv_context = '|';
-
-	char * xml_context[] = {
-		"<?xml version=\"1.0\" ?>", 
-		"tracks", 
-		"track", 
-		"name", 
-		"artist", 
-		"genre"
-	};
-
-	if((st = ADT_Vector_new(&ptr_track_vector)) != OK)
-	{
-		errors_printer(st);
-		return st;
-	}
-
-	if((st = ADT_Vector_set_csv_exporter(ptr_track_vector, *ADT_Track_export_as_csv)) != OK)
-	{
-		errors_printer(st);
-		return st;
-	}
-
-	if((st = ADT_Vector_set_xml_exporter(ptr_track_vector, *ADT_Track_export_as_xml)) != OK)
-	{
-		errors_printer(st);
-		return st;
-	}
-
-	if((st = ADT_Vector_set_destructor(ptr_track_vector, *ADT_Track_destroy)) != OK)
-	{
-		errors_printer(st);
-		return st;
-	}
-
-	for (i = 0; i < amf; i++)
-	{
-		if ((file = fopen(files_names[i], "rb")) == NULL)
-			return ERROR_INPUT_FILE_NOT_FOUND;
-
-		if ((st = ADT_Track_new_from_mp3_file(file, &ptr_track)))
-		{
-			fclose(file);
-			ADT_Vector_delete(&ptr_track_vector);
-			return st;
-		}
-
-		if ((st = ADT_Vector_add_element(ptr_track_vector, (void *) &ptr_track)) != OK)
-		{
-			fclose(file);
-			ADT_Vector_delete(&ptr_track_vector);
-			return st;
-		}
-
-		switch (config.output_format)
-		{
-			case output_format_csv:
-			if((st = ADT_Vector_export_as_csv(ptr_track_vector, (void *) &csv_context, stdout)) != OK)
-				{
-					errors_printer(st);
-					return st;
-				}
-			break;
-
-			case output_format_xml:
-			if((st = ADT_Vector_export_as_xml(ptr_track_vector, (void *) &xml_context, stdout)) != OK)
-				{
-					errors_printer(st);
-					return st;
-				}
-			break;
-
-			default:
-			return ERROR_PROGRAM_INVOCATION;
-		}
-	}
 	return OK;
 }
 
