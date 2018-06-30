@@ -53,7 +53,6 @@ status_t ADT_Track_set_genre(ADT_Track_t *, unsigned char);
 
 
 /*-------------------Comparators--------------------*/
-/*Estos son los que necesitamos para el tp pero para quede completo habría que hacer los otros*/
 int ADT_Track_compare_by_name(const void * ptr_track1, const void * ptr_track2);
 int ADT_Track_compare_by_artist(const void * ptr_track1, const void * ptr_track2);
 int ADT_Track_compare_by_genre(const void * ptr_track1, const void * ptr_track2);
