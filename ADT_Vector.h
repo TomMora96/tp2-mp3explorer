@@ -9,9 +9,9 @@
 #define ADT_CHOP_SIZE 20
 
 typedef struct {
-	size_t size; /* es;ta es la cantidad de elementos que tiene el vector */
-	size_t alloc_size; /* esta es la cantidad de elementos que puede tener el vector */
-	void ** elements; /* tipo de dato en cada casillero del vector */
+	size_t size;
+	size_t alloc_size;
+	void ** elements;
 	destructor_t destructor;
 	exporter_t xml_exporter;
 	exporter_t csv_exporter;

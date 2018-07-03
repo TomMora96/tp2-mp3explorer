@@ -3,6 +3,8 @@
 #ifndef TYPES__H 
 #define TYPES__H
 
+#include <stdio.h>
+
 typedef enum {
 	OK,
 	ERROR_NULL_POINTER = 1,
@@ -18,9 +20,9 @@ typedef enum {
 } status_t;
 
 typedef enum {
-	output_format_csv = 0,
-	output_format_xml = 1
-} output_format_t;
+	DOC_TYPE_CSV = 0,
+	DOC_TYPE_XML = 1
+} doc_type_t;
 
 
 typedef enum {

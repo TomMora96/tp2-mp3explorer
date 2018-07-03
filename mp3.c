@@ -1,3 +1,5 @@
+/* mp3.c */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -5,7 +7,7 @@
 #include "ADT_Track.h"
 #include "types.h"
 
-status_t read_header_from_mp3(FILE * f, char * header)
+status_t get_mp3_header(FILE * f, char * header)
 {
 	size_t length;
 

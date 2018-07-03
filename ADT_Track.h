@@ -27,14 +27,12 @@ status_t ADT_Track_destroy(void * *);
 
 
 /*-------------------Exporters----------------------*/
-status_t ADT_Track_printer(void * ptr_track, FILE * fo);
+status_t ADT_Track_print(void * ptr_track, FILE * fo);
 status_t ADT_Track_export_as_xml (const void * pv, const void * p_context, FILE * fo);
 status_t ADT_Track_export_as_csv (const void * pv, const void * p_context, FILE * fo);
 
 
 /*-------------------Getters------------------------*/
-/*Se debe liberar la memoria de las cadenas de --------*/ 
-/*caracteres devueltas por los getters luego de su uso.*/
 status_t ADT_Track_get_name(ADT_Track_t *, char **);
 status_t ADT_Track_get_artist(ADT_Track_t *, char **);
 status_t ADT_Track_get_album(ADT_Track_t *, char **);

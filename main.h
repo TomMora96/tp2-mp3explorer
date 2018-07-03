@@ -8,7 +8,7 @@
 #include "config.h"
 #include "ADT_Vector.h"
 
-#define CMD_MIN_INPUT_ARGS 7
+#define MIN_CMD_ARGS 7
 
 #define CMD_ARG_OUTPUT_FORMAT_TOKEN_POS 1
 #define CMD_ARG_OUTPUT_FORMAT_VALUE_POS 2
@@ -22,7 +22,7 @@
 #define CMD_ARG_SORTING_CRTIERION_VALUE_POS 4
 #define SORTING_CRIETERION_TOKEN "-sort"
 
-#define MAX_SORTING_CRITERIA 3
+#define MAX_TRACK_COMPARATOR 3
 #define SORT_BY_NAME_STR "name"
 #define SORT_BY_ALBUM_STR "artist"
 #define SORT_BY_GENRE_STR "genre"
@@ -32,7 +32,6 @@
 #define OUTPUT_FILE_TOKEN "-out"
 
 status_t validate_arguments (int argc, char *argv[], config_t *config);
-status_t load_vector (ADT_Vector_t ** ptr_track_vector, config_t *config);
 
 config_t config;
 

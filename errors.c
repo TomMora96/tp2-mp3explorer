@@ -5,7 +5,7 @@
 #include "types.h"
 #include "errors.h"
 
-char *errors[] = {
+char *errors[MAX_ERRORS] = {
 	MSG_OK,
 	MSG_ERROR_NULL_POINTER,
 	MSG_ERROR_PROGRAM_INVOCATION,
@@ -16,10 +16,10 @@ char *errors[] = {
 	MSG_ERROR_CSV_EXPORTER_NOT_SETTED,
 	MSG_ERROR_COMPARATOR_NOT_SETTED,
 	MSG_ERROR_INVALID_TRACK_PARAMETER,
-	MSG_ERROR_CLOSE_FILES
+	MSG_ERROR_CLOSE_FILE
 };
 
-status_t errors_printer (status_t status)
+status_t print_errors (status_t status)
 {
 	fprintf(stderr, "%s\n", errors[status]);
 

@@ -1,3 +1,5 @@
+/* mp3.h */
+
 #ifndef MP3__H
 #define MP3__H
 
@@ -29,6 +31,6 @@
 #define LEXEM_START_GENRE  127
 #define LEXEM_SPAN_GENRE     1
 
-status_t read_header_from_mp3(FILE * f, char * header);
+status_t get_mp3_header(FILE * f, char * header);
 
 #endif

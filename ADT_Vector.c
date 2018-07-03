@@ -41,21 +41,24 @@ status_t ADT_Vector_new (ADT_Vector_t ** pp)
 	return OK;
 }
 
-status_t ADT_Vector_expand (ADT_Vector_t * v, size_t chop_size)
+/* Primero verificamos que haya memoria para aumentar 
+el numero de elementos que puede almacenar el vector y 
+su longitud */
+status_t ADT_Vector_Expand (ADT_Vector_t * v, size_t new_size)
 {
 	void ** aux;
 
 	if(v == NULL)
 		return ERROR_NULL_POINTER;
 
-	if(chop_size == 0)
+	if(new_size == 0)
 		return ERROR_OUT_OF_MEMORY;
 
-	if((aux = (void *) realloc(v -> elements, (v -> alloc_size + chop_size) * sizeof(void *))) == NULL)
+	if((aux = (void *) realloc(v -> elements, (v -> alloc_size + new_size) * sizeof(void *))) == NULL)
 		return ERROR_OUT_OF_MEMORY;
 
 	v -> elements = aux;
-	v -> alloc_size += chop_size;
+	v -> alloc_size += new_size;
 		
 	return OK;
 }
@@ -122,7 +125,6 @@ status_t ADT_Vector_add_element(ADT_Vector_t * v, void * element)
 	if(v -> size == v -> alloc_size)
 	{
 		if((aux = (void **) realloc(v -> elements, (v -> alloc_size + ADT_CHOP_SIZE) * sizeof(void *))) == NULL)
-			/* la destruccion tiene que ser en el main */
 			return ERROR_OUT_OF_MEMORY;
 
 		v -> elements = aux;

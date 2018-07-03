@@ -1,3 +1,5 @@
+/* ADT_Track.c */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -59,6 +61,7 @@ status_t ADT_Track_new_from_mp3_file(FILE * fi, ADT_Track_t ** ptr_track)
 	char mp3_header[MP3_HEADER_SIZE];
 	char buf[MP3_HEADER_SIZE];
 	char * temp;
+	unsigned long int year_temp;
 
 	if(fi == NULL || ptr_track == NULL)
 		return ERROR_NULL_POINTER;
@@ -66,7 +69,7 @@ status_t ADT_Track_new_from_mp3_file(FILE * fi, ADT_Track_t ** ptr_track)
 	if((st = ADT_Track_new(ptr_track)) != OK)
 		return st;
 
-	if((st = read_header_from_mp3(fi, mp3_header)) != OK)
+	if((st = get_mp3_header(fi, mp3_header)) != OK)
 	{
 		ADT_Track_destroy((void **) &ptr_track);
 		return st;
@@ -74,7 +77,7 @@ status_t ADT_Track_new_from_mp3_file(FILE * fi, ADT_Track_t ** ptr_track)
 
 	memcpy(buf, mp3_header + LEXEM_START_TITLE, LEXEM_SPAN_TITLE);
     buf[LEXEM_SPAN_ARTIST] = '\0';
-    printf("%s\n", buf);
+
     ADT_Track_set_name(*ptr_track, buf);
 
     memcpy(buf, mp3_header + LEXEM_START_ARTIST, LEXEM_SPAN_ARTIST);
@@ -87,7 +90,13 @@ status_t ADT_Track_new_from_mp3_file(FILE * fi, ADT_Track_t ** ptr_track)
 
     memcpy(buf, mp3_header + LEXEM_START_YEAR, LEXEM_SPAN_YEAR);
     buf[LEXEM_SPAN_YEAR] = '\0';
-    ADT_Track_set_year(*ptr_track, strtol(buf, &temp, 10));
+
+    year_temp = strtol(buf, &temp, 10);
+
+    if (*temp != '\0' && *temp != '\n')
+    	return ERROR_PROGRAM_INVOCATION;
+
+    ADT_Track_set_year(*ptr_track, year_temp);
 
     memcpy(buf, mp3_header + LEXEM_START_COMMENT, LEXEM_SPAN_COMMENT);
     buf[LEXEM_SPAN_COMMENT] = '\0';
@@ -117,7 +126,7 @@ status_t ADT_Track_destroy(void ** pp)
 
 
 /*-------------------Exporters----------------------*/
-status_t ADT_Track_printer(void * ptr_track, FILE * fo)
+status_t ADT_Track_print(void * ptr_track, FILE * fo)
 {
 	ADT_Track_t * p = (ADT_Track_t *) ptr_track;
 
@@ -145,13 +154,15 @@ status_t ADT_Track_export_as_csv (const void * pv, const void * p_context, FILE 
 
 	fprintf(fo, "%s%c", p -> artist, delimiter);
 
+	fprintf(fo, "%s", genres[p -> genre]);
 
-	if(p-> genre > MAX_GENRES - 1)
+/*
+	if(p -> genre > MAX_GENRES - 1)
 		fprintf(fo, "%u", p -> genre);
 
 	else
 		fprintf(fo, "%s", genres[p -> genre]);
-	
+*/	
 	fprintf(fo, "\n");
 
 
@@ -168,22 +179,27 @@ status_t ADT_Track_export_as_xml (const void * pv, const void * p_context, FILE 
 
 	fprintf(fo, "\t%c%s%c\n", '<', context[XML_CONTEXT_TRACK_TAG_POS], '>');
 
-	fprintf(fo, "\t\t%c%s%c%s%c%c%s%c\n", '<', context[XML_CONTEXT_NAME_TAG_POS], '>', p -> name, '<', '\\',  context[XML_CONTEXT_NAME_TAG_POS], '>');
+	fprintf(fo, "\t\t%c%s%c%s%s%s%c\n", '<', context[XML_CONTEXT_NAME_TAG_POS], '>', p -> name, "<\\", context[XML_CONTEXT_NAME_TAG_POS], '>');
 
-	fprintf(fo, "\t\t%c%s%c%s%c%c%s%c\n", '<', context[XML_CONTEXT_ARTIST_TAG_POS], '>', p -> artist, '<', '\\',  context[XML_CONTEXT_ARTIST_TAG_POS], '>');
+	fprintf(fo, "\t\t%c%s%c%s%s%s%c\n", '<', context[XML_CONTEXT_ARTIST_TAG_POS], '>', p -> artist, "<\\", context[XML_CONTEXT_ARTIST_TAG_POS], '>');
 
 	if(p-> genre > MAX_GENRES - 1)
-		fprintf(fo, "\t\t%c%s%c%u%c%c%s%c\n", '<', context[XML_CONTEXT_GENRE_TAG_POS], '>', p -> genre, '<', '\\',  context[XML_CONTEXT_GENRE_TAG_POS], '>');
+		fprintf(fo, "\t\t%c%s%c%u%s%s%c\n", '<', context[XML_CONTEXT_GENRE_TAG_POS], '>', p -> genre, "<\\", context[XML_CONTEXT_GENRE_TAG_POS], '>');
 
 	else
-		fprintf(fo, "\t\t%c%s%c%s%c%c%s%c\n", '<', context[XML_CONTEXT_GENRE_TAG_POS], '>', genres[p -> genre], '<', '\\',  context[XML_CONTEXT_GENRE_TAG_POS], '>');
+		fprintf(fo, "\t\t%c%s%c%s%s%s%c\n", '<', context[XML_CONTEXT_GENRE_TAG_POS], '>', genres[p -> genre], "<\\", context[XML_CONTEXT_GENRE_TAG_POS], '>');
 	
-	fprintf(fo, "\t%c%c%s%c\n", '<', '\\', context[XML_CONTEXT_TRACK_TAG_POS], '>');
+	fprintf(fo, "\t%s%s%c\n", "<\\", context[XML_CONTEXT_TRACK_TAG_POS], '>');
 
 	return OK;
 }
 
 /*-------------------Getters------------------------*/
+/* Se debe liberar la memoria de las cadenas de 
+caracteres devueltas por los getters luego de su uso. */
+/* Usan strdup, asi que hay que liberar la memoria despues
+ de usar el dato ya que crea una copia dinamica. */
+/* CONFIRMAR */
 status_t ADT_Track_get_name(ADT_Track_t *track, char * *name)
 {
 	if(track == NULL || name == NULL)
@@ -217,16 +233,6 @@ status_t ADT_Track_get_album(ADT_Track_t *track, char * *album)
 	return OK;
 }
 
-status_t ADT_Track_get_year(ADT_Track_t *track, unsigned short *year)
-{
-	if(track == NULL || year == NULL)
-		return ERROR_NULL_POINTER;
-
-	*year = track -> year;
-
-	return OK;
-}
-
 status_t ADT_Track_get_comment(ADT_Track_t *track, char * *comment)
 {
 	if(track == NULL || comment == NULL)
@@ -238,11 +244,39 @@ status_t ADT_Track_get_comment(ADT_Track_t *track, char * *comment)
 	return OK;
 }
 
+status_t ADT_Track_get_year(ADT_Track_t *track, unsigned short *year)
+{
+	if(track == NULL || year == NULL)
+		return ERROR_NULL_POINTER;
+/*
+	*year = track -> year;
+*/
+
+/* otra opcion */
+	/* no olvidar HC */
+
+	if ((year = (unsigned short *)malloc(4 * sizeof(unsigned short))) == NULL)
+		return ERROR_OUT_OF_MEMORY;
+	*year = track -> year;
+
+
+
+	return OK;
+}
+
+
 status_t ADT_Track_get_genre(ADT_Track_t *track, unsigned char *genre)
 {
 	if(track == NULL || genre == NULL)
 		return ERROR_NULL_POINTER;
+/*
+	*genre = track -> genre;
+*/
 
+/* Otra opcion: */
+	/* no olvidar HC */
+	if ((genre = (unsigned char *)malloc(7 * sizeof(unsigned char))) == NULL)
+		return ERROR_OUT_OF_MEMORY;
 	*genre = track -> genre;
 
 	return OK;
@@ -250,11 +284,14 @@ status_t ADT_Track_get_genre(ADT_Track_t *track, unsigned char *genre)
 
 
 /*-------------------Setters------------------------*/
+/* Los setters usan strcpy (hacen una copia del parametro)
+ asi que no hay problemas por asignacion de memoria. */
+/* CONFIRMAR */
 status_t ADT_Track_set_name(ADT_Track_t * ptr_track, const char * name)
 {
 	if(ptr_track == NULL || name == NULL)
 		return ERROR_NULL_POINTER;
-	printf("%s%s\n", "name a setear: ", name);
+
 	strcpy(ptr_track -> name, name);
 	return OK;	
 }
@@ -263,7 +300,7 @@ status_t ADT_Track_set_artist(ADT_Track_t * ptr_track, const char * artist)
 {
 	if(ptr_track == NULL || artist == NULL)
 		return ERROR_NULL_POINTER;
-	printf("%s%s\n", "Artist a setear: ", artist);
+
 	strcpy(ptr_track -> artist, artist);
 	return OK;	
 }
@@ -277,14 +314,6 @@ status_t ADT_Track_set_album(ADT_Track_t * ptr_track, char * album)
 	return OK;	
 }
 
-status_t ADT_Track_set_year(ADT_Track_t * ptr_track, unsigned short year)
-{
-	if(ptr_track == NULL)
-		return ERROR_NULL_POINTER;
-
-	ptr_track -> year = year;
-	return OK;	
-}
 status_t ADT_Track_set_comment(ADT_Track_t * ptr_track, const char * comment)
 {
 	if(ptr_track == NULL || comment == NULL)
@@ -294,12 +323,23 @@ status_t ADT_Track_set_comment(ADT_Track_t * ptr_track, const char * comment)
 	return OK;	
 }
 
+status_t ADT_Track_set_year(ADT_Track_t * ptr_track, unsigned short year)
+{
+	if(ptr_track == NULL)
+		return ERROR_NULL_POINTER;
+
+	ptr_track -> year = year;
+
+	return OK;	
+}
+
 status_t ADT_Track_set_genre(ADT_Track_t * ptr_track, unsigned char genre)
 {
 	if(ptr_track == NULL)
 		return ERROR_NULL_POINTER;
 
 	ptr_track -> genre = genre;
+
 	return OK;	
 }
 
