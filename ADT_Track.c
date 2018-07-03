@@ -23,7 +23,7 @@ status_t ADT_Track_new(ADT_Track_t ** ptr_track)
 	return OK;
 }
 
-status_t ADT_Track_new_from_parameters(ADT_Track_t * *ptr_track, char * name, char * artist, char * album, unsigned short year, char * comment, unsigned char genre)
+status_t ADT_Track_new_from_parameters(ADT_Track_t ** ptr_track, char * name, char * artist, char * album, unsigned short year, char * comment, unsigned char genre)
 {
 	status_t st;
 
@@ -156,14 +156,12 @@ status_t ADT_Track_export_as_csv (const void * pv, const void * p_context, FILE 
 
 	fprintf(fo, "%s", genres[p -> genre]);
 
-/*
+
 	if(p -> genre > MAX_GENRES - 1)
 		fprintf(fo, "%u", p -> genre);
 
 	else
 		fprintf(fo, "%s", genres[p -> genre]);
-*/	
-	fprintf(fo, "\n");
 
 
 	return OK;
@@ -248,18 +246,8 @@ status_t ADT_Track_get_year(ADT_Track_t *track, unsigned short *year)
 {
 	if(track == NULL || year == NULL)
 		return ERROR_NULL_POINTER;
-/*
+
 	*year = track -> year;
-*/
-
-/* otra opcion */
-	/* no olvidar HC */
-
-	if ((year = (unsigned short *)malloc(4 * sizeof(unsigned short))) == NULL)
-		return ERROR_OUT_OF_MEMORY;
-	*year = track -> year;
-
-
 
 	return OK;
 }
@@ -269,15 +257,8 @@ status_t ADT_Track_get_genre(ADT_Track_t *track, unsigned char *genre)
 {
 	if(track == NULL || genre == NULL)
 		return ERROR_NULL_POINTER;
-/*
-	*genre = track -> genre;
-*/
 
-/* Otra opcion: */
-	/* no olvidar HC */
-	if ((genre = (unsigned char *)malloc(7 * sizeof(unsigned char))) == NULL)
-		return ERROR_OUT_OF_MEMORY;
-	*genre = track -> genre;
+	* genre = track -> genre;
 
 	return OK;
 }

@@ -13,8 +13,8 @@ typedef struct {
 	size_t alloc_size;
 	void ** elements;
 	destructor_t destructor;
-	exporter_t xml_exporter;
-	exporter_t csv_exporter;
+	exporter_t xml_export;
+	exporter_t csv_export;
 	comparator_t comparator;
 } ADT_Vector_t;
 
@@ -45,8 +45,8 @@ status_t ADT_Vector_sort(ADT_Vector_t * v);
 
 /*-------------------Setters------------------------*/
 status_t ADT_Vector_set_destructor (ADT_Vector_t * v, destructor_t pf);
-status_t ADT_Vector_set_csv_exporter(ADT_Vector_t * v, exporter_t pf);
-status_t ADT_Vector_set_xml_exporter(ADT_Vector_t * v, exporter_t pf);
+status_t ADT_Vector_set_csv_export(ADT_Vector_t * v, exporter_t pf);
+status_t ADT_Vector_set_xml_export(ADT_Vector_t * v, exporter_t pf);
 status_t ADT_Vector_set_comparator(ADT_Vector_t * v, comparator_t pf);
 
 

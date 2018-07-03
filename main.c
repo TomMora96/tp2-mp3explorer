@@ -61,7 +61,7 @@ int main (int argc, char *argv[])
 	return OK;
 }
 
-/* función que valida argumentos */
+/* función que valida argumentos. */
 status_t validate_arguments (int argc, char *argv[], config_t *config)
 {	
 	size_t i = 0;

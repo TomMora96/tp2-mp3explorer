@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include "types.h"
+#include "mp3.h"
 
 typedef struct {
 	doc_type_t output_format;

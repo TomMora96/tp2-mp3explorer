@@ -40,13 +40,13 @@ status_t process_init_vector (ADT_Vector_t ** ptr_track_vector, config_t *config
 	if((st = ADT_Vector_new(ptr_track_vector)) != OK)
 		return st;
 
-	if((st = ADT_Vector_set_csv_exporter(*ptr_track_vector, *ADT_Track_export_as_csv)) != OK)
+	if((st = ADT_Vector_set_csv_export(*ptr_track_vector, *ADT_Track_export_as_csv)) != OK)
 	{
 		ADT_Vector_delete(ptr_track_vector);
 		return st;
 	}
 
-	if((st = ADT_Vector_set_xml_exporter(*ptr_track_vector, *ADT_Track_export_as_xml)) != OK)
+	if((st = ADT_Vector_set_xml_export(*ptr_track_vector, *ADT_Track_export_as_xml)) != OK)
 	{
 		ADT_Vector_delete(ptr_track_vector);
 		return st;

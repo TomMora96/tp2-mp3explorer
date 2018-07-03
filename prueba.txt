@@ -1,11 +1,6 @@
 <?xml version="1.0" ?>
 <tracks>
 	<track>
-		<name>Baby Love<\name>
-		<artist>The Supremes<\artist>
-		<genre>R&B<\genre>
-	<\track>
-	<track>
 		<name>Get A Grip<\name>
 		<artist>Aerosmith<\artist>
 		<genre>Rock<\genre>
@@ -19,5 +14,10 @@
 		<name>Strutter<\name>
 		<artist>Kiss<\artist>
 		<genre>Other<\genre>
+	<\track>
+	<track>
+		<name>Baby Love<\name>
+		<artist>The Supremes<\artist>
+		<genre>R&B<\genre>
 	<\track>
 </tracks>

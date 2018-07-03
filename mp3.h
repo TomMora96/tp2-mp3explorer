@@ -33,4 +33,10 @@
 
 status_t get_mp3_header(FILE * f, char * header);
 
+typedef enum {
+	SORT_BY_NAME = 0,
+	SORT_BY_ARTIST = 1,
+	SORT_BY_GENRE = 2
+} sort_criteria_t;
+
 #endif

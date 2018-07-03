@@ -12,24 +12,19 @@ typedef enum {
 	ERROR_OUT_OF_MEMORY = 3,
 	ERROR_INVALID_INPUT_POSITION = 4,
 	ERROR_INPUT_FILE_NOT_FOUND = 5,
-	ERROR_XML_EXPORTER_NOT_SETTED = 6,
-	ERROR_CSV_EXPORTER_NOT_SETTED = 7,
-	ERROR_COMPARATOR_NOT_SETTED = 8,
+	ERROR_XML_EXPORTER_NOT_SET = 6,
+	ERROR_CSV_EXPORTER_NOT_SET = 7,
+	ERROR_COMPARATOR_NOT_SET = 8,
 	ERROR_INVALID_TRACK_PARAMETER = 9,
-	ERROR_CLOSE_FILES = 10
+	ERROR_CLOSE_FILES = 10,
+	ERROR_XML_HEADER = 11,
+	ERROR_XML_FOOTER = 12
 } status_t;
 
 typedef enum {
 	DOC_TYPE_CSV = 0,
 	DOC_TYPE_XML = 1
 } doc_type_t;
-
-
-typedef enum {
-	sort_by_name = 0,
-	sort_by_artist = 1,
-	sort_by_genre = 2
-} sort_criteria_t;
 
 typedef enum {
 	TRUE,

@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "mp3.h"
-#include "ADT_Track.h"
 #include "types.h"
 
 status_t get_mp3_header(FILE * f, char * header)

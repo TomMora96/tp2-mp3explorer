@@ -31,8 +31,8 @@ status_t ADT_Vector_new (ADT_Vector_t ** pp)
 	(*pp) -> size = 0;
 
 	(*pp) -> destructor = NULL;
-	(*pp) -> xml_exporter = NULL;
-	(*pp) -> csv_exporter = NULL;
+	(*pp) -> xml_export = NULL;
+	(*pp) -> csv_export = NULL;
 	(*pp) -> comparator = NULL;
 
 	for (i = 0; i < ADT_INIT_CHOP; i++)
@@ -149,15 +149,15 @@ status_t ADT_Vector_export_as_csv (const void * v, const void * p_context, FILE 
 	if(fo == NULL || v == NULL || p_context == NULL)
 		return ERROR_NULL_POINTER;
 
-	if(p -> csv_exporter == NULL)
-		return ERROR_CSV_EXPORTER_NOT_SETTED;
+	if(p -> csv_export == NULL)
+		return ERROR_CSV_EXPORTER_NOT_SET;
 
 	v_size = ADT_Vector_get_size(p);
 
 	for(i = 0; i < v_size; i++)
 	{
 		element = ADT_Vector_get_element(v, i);
-		(p -> csv_exporter)(element, p_context, fo);
+		(p -> csv_export)(element, p_context, fo);
 	}
 
 	return OK;
@@ -173,7 +173,7 @@ status_t ADT_Vector_export_as_xml (const void * v, const void * p_context, FILE 
 	void * element;
 
 	if((header_file = fopen(XML_HEADER, "rt")) == NULL)
-		return ERROR_INPUT_FILE_NOT_FOUND;
+		return ERROR_XML_HEADER;
 
 	while((c = fgetc(header_file)) != EOF && c)
 		fputc(c, fo);
@@ -185,11 +185,11 @@ status_t ADT_Vector_export_as_xml (const void * v, const void * p_context, FILE 
 	for(i = 0; i < vec_size; i++)
 	{
 		element = ADT_Vector_get_element (v, i);		
-		(p -> xml_exporter)(element, context, fo);
+		(p -> xml_export)(element, context, fo);
 	}
 
 	if((footer_file = fopen(XML_FOOTER, "rt")) == NULL)
-		return ERROR_INPUT_FILE_NOT_FOUND;
+		return ERROR_XML_FOOTER;
 
 	while((c = fgetc(footer_file)) != EOF && c)
 		fputc(c, fo);
@@ -207,7 +207,7 @@ status_t ADT_Vector_sort(ADT_Vector_t * v)
 		return ERROR_NULL_POINTER;
 
 	if(v -> comparator == NULL)
-		return ERROR_COMPARATOR_NOT_SETTED;
+		return ERROR_COMPARATOR_NOT_SET;
 
 	qsort(v -> elements, v -> size, sizeof(v -> elements[0]), v -> comparator);
 
@@ -226,23 +226,23 @@ status_t ADT_Vector_set_destructor (ADT_Vector_t * v, destructor_t pf)
 	return OK;
 }
 
-status_t ADT_Vector_set_csv_exporter(ADT_Vector_t * v, exporter_t pf)
+status_t ADT_Vector_set_csv_export(ADT_Vector_t * v, exporter_t pf)
 {
 	if(v == NULL || pf == NULL)
 		return ERROR_NULL_POINTER;
 	
-	v -> csv_exporter = pf;
+	v -> csv_export = pf;
 
 	return OK;
 
 }
 
-status_t ADT_Vector_set_xml_exporter(ADT_Vector_t * v, exporter_t pf)
+status_t ADT_Vector_set_xml_export(ADT_Vector_t * v, exporter_t pf)
 {
 	if(v == NULL || pf == NULL)
 		return ERROR_NULL_POINTER;
 	
-	v -> xml_exporter = pf;
+	v -> xml_export = pf;
 
 	return OK;
 
