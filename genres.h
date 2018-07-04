@@ -5,6 +5,4 @@
 
 #define MAX_GENRES 127
 
-char * genres[MAX_GENRES];
-
 #endif

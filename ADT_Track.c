@@ -11,6 +11,9 @@
 #include "xml.h"
 #include "csv.h"
 
+
+extern char * genres[];
+
 /*-------------------Constructors-------------------*/
 status_t ADT_Track_new(ADT_Track_t ** ptr_track)
 {
@@ -20,10 +23,11 @@ status_t ADT_Track_new(ADT_Track_t ** ptr_track)
 	if((*ptr_track = (ADT_Track_t *) malloc(sizeof(ADT_Track_t))) == NULL)
 		return ERROR_OUT_OF_MEMORY;
 
+
 	return OK;
 }
 
-status_t ADT_Track_new_from_parameters(ADT_Track_t ** ptr_track, char * name, char * artist, char * album, unsigned short year, char * comment, unsigned char genre)
+status_t ADT_Track_new_from_parameters(ADT_Track_t ** ptr_track, const char * name, const char * artist, const char * album, unsigned short year, const char * comment, unsigned char genre)
 {
 	status_t st;
 
@@ -154,15 +158,17 @@ status_t ADT_Track_export_as_csv (const void * pv, const void * p_context, FILE 
 
 	fprintf(fo, "%s%c", p -> artist, delimiter);
 
-	fprintf(fo, "%s", genres[p -> genre]);
 
-
+	/*Si el genero del Track no se encuentra en el diccionario de generos*/
+	/*exportar el numero asociado al genero.-----------------------------*/
 	if(p -> genre > MAX_GENRES - 1)
 		fprintf(fo, "%u", p -> genre);
 
+	/*Si no, exportar el nombre del genero, que se encuentra en el dic de generos.*/
 	else
 		fprintf(fo, "%s", genres[p -> genre]);
-
+	
+	fprintf(fo, "\n");
 
 	return OK;
 }
@@ -177,27 +183,30 @@ status_t ADT_Track_export_as_xml (const void * pv, const void * p_context, FILE 
 
 	fprintf(fo, "\t%c%s%c\n", '<', context[XML_CONTEXT_TRACK_TAG_POS], '>');
 
-	fprintf(fo, "\t\t%c%s%c%s%s%s%c\n", '<', context[XML_CONTEXT_NAME_TAG_POS], '>', p -> name, "<\\", context[XML_CONTEXT_NAME_TAG_POS], '>');
+	fprintf(fo, "\t\t%c%s%c%s%s%s%c\n", '<', context[XML_CONTEXT_NAME_TAG_POS], '>', p -> name, "</", context[XML_CONTEXT_NAME_TAG_POS], '>');
 
-	fprintf(fo, "\t\t%c%s%c%s%s%s%c\n", '<', context[XML_CONTEXT_ARTIST_TAG_POS], '>', p -> artist, "<\\", context[XML_CONTEXT_ARTIST_TAG_POS], '>');
+	fprintf(fo, "\t\t%c%s%c%s%s%s%c\n", '<', context[XML_CONTEXT_ARTIST_TAG_POS], '>', p -> artist, "</", context[XML_CONTEXT_ARTIST_TAG_POS], '>');
 
 	if(p-> genre > MAX_GENRES - 1)
-		fprintf(fo, "\t\t%c%s%c%u%s%s%c\n", '<', context[XML_CONTEXT_GENRE_TAG_POS], '>', p -> genre, "<\\", context[XML_CONTEXT_GENRE_TAG_POS], '>');
+		fprintf(fo, "\t\t%c%s%c%u%s%s%c\n", '<', context[XML_CONTEXT_GENRE_TAG_POS], '>', p -> genre, "</", context[XML_CONTEXT_GENRE_TAG_POS], '>');
 
 	else
-		fprintf(fo, "\t\t%c%s%c%s%s%s%c\n", '<', context[XML_CONTEXT_GENRE_TAG_POS], '>', genres[p -> genre], "<\\", context[XML_CONTEXT_GENRE_TAG_POS], '>');
+		fprintf(fo, "\t\t%c%s%c%s%s%s%c\n", '<', context[XML_CONTEXT_GENRE_TAG_POS], '>', genres[p -> genre], "</", context[XML_CONTEXT_GENRE_TAG_POS], '>');
 	
-	fprintf(fo, "\t%s%s%c\n", "<\\", context[XML_CONTEXT_TRACK_TAG_POS], '>');
+	fprintf(fo, "\t%s%s%c\n", "</", context[XML_CONTEXT_TRACK_TAG_POS], '>');
 
+	return OK;
+}
+
+status_t ADT_Track_export_as_html (const void * v, const void * p_context, FILE * fo)
+{
+	/*IMPLEMENTAR!*/
 	return OK;
 }
 
 /*-------------------Getters------------------------*/
 /* Se debe liberar la memoria de las cadenas de 
 caracteres devueltas por los getters luego de su uso. */
-/* Usan strdup, asi que hay que liberar la memoria despues
- de usar el dato ya que crea una copia dinamica. */
-/* CONFIRMAR */
 status_t ADT_Track_get_name(ADT_Track_t *track, char * *name)
 {
 	if(track == NULL || name == NULL)
@@ -252,7 +261,7 @@ status_t ADT_Track_get_year(ADT_Track_t *track, unsigned short *year)
 	return OK;
 }
 
-
+/*El genero es de tipo unsigned char ya que el estandar ID3v1 la adjudica un byte al campo de genero.*/
 status_t ADT_Track_get_genre(ADT_Track_t *track, unsigned char *genre)
 {
 	if(track == NULL || genre == NULL)
@@ -265,9 +274,7 @@ status_t ADT_Track_get_genre(ADT_Track_t *track, unsigned char *genre)
 
 
 /*-------------------Setters------------------------*/
-/* Los setters usan strcpy (hacen una copia del parametro)
- asi que no hay problemas por asignacion de memoria. */
-/* CONFIRMAR */
+/* Los setters realizan una copia del parametro-----*/
 status_t ADT_Track_set_name(ADT_Track_t * ptr_track, const char * name)
 {
 	if(ptr_track == NULL || name == NULL)
@@ -314,6 +321,7 @@ status_t ADT_Track_set_year(ADT_Track_t * ptr_track, unsigned short year)
 	return OK;	
 }
 
+/*El genero es de tipo unsigned char ya que el estandar ID3v1 la adjudica un byte al campo de genero.*/
 status_t ADT_Track_set_genre(ADT_Track_t * ptr_track, unsigned char genre)
 {
 	if(ptr_track == NULL)

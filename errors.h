@@ -16,8 +16,8 @@
 #define MSG_ERROR_COMPARATOR_NOT_SET "Tried to sort vector without setting a comparator function."
 #define MSG_ERROR_INVALID_TRACK_PARAMETER "Tried to create new track from invalid parameters."
 #define MSG_ERROR_CLOSE_FILE "File can not close."
-#define MSG_ERROR_XML_HEADER "Error open xml header."
-#define MSG_ERROR_XML_FOOTER "Error open xml footer."
+#define MSG_ERROR_XML_HEADER_NOT_FOUND "Error open xml header."
+#define MSG_ERROR_XML_FOOTER_NOT_FOUND "Error open xml footer."
 
 status_t print_errors (status_t status);
 

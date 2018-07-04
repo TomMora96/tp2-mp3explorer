@@ -3,13 +3,14 @@
 CFLAGS = -ansi -pedantic -Wall
 CC = gcc
 
+#all: compila todo el programa y elemina los archivos objeto
 all: make_mp3explorer clean
 
-
+#make_mp3explorer: compila todo el programa a patir de los archivos objeto de todos los archivos .c
 make_mp3explorer: main.o errors.o config.o ADT_Track.o ADT_Vector.o csv.o genres.o mp3.o mp3explorer.o xml.o
 	$(CC) $(CFLAGS) -o mp3explorer main.o errors.o config.o ADT_Track.o ADT_Vector.o csv.o genres.o mp3.o mp3explorer.o xml.o
 
-main.o: main.c main.h mp3explorer.h types.h errors.h ADT_Track.h ADT_Vector.h config.h mp3.h xml.h csv.h
+main.o: main.c main.h mp3explorer.h types.h errors.h config.h
 	$(CC) $(CFLAGS) -o main.o -c main.c
 
 errors.o: errors.c types.h errors.h
@@ -39,6 +40,7 @@ xml.o: xml.c xml.h
 mp3.o: mp3.c mp3.h ADT_Track.h types.h
 	$(CC) $(CFLAGS) -o mp3.o -c mp3.c
 
+#clean: elemina los archivos objeto compilados
 clean:
 	rm *.o
 

@@ -22,7 +22,7 @@
 #define CMD_ARG_SORTING_CRTIERION_VALUE_POS 4
 #define SORTING_CRIETERION_TOKEN "-sort"
 
-#define MAX_TRACK_COMPARATOR 3
+#define MAX_SORTING_CRITERIA 3
 #define SORT_BY_NAME_STR "name"
 #define SORT_BY_ALBUM_STR "artist"
 #define SORT_BY_GENRE_STR "genre"

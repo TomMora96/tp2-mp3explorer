@@ -10,7 +10,6 @@ status_t get_mp3_header(FILE * f, char * header)
 {
 	size_t length;
 
-	/*Validar!*/
 	fseek(f, 0, SEEK_END);						
     length = ftell(f);							
     fseek(f,length-MP3_HEADER_SIZE,SEEK_SET);	

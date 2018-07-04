@@ -3,8 +3,12 @@
 #ifndef CSV__H
 #define CSV__H
 
-#define CSV_DELIMITER '|'
+/* Este modulo contiene los detalles, definicion y 
+ejecucion para manejar el formato de exportacion cvs,
+por ende, no es una biblioteca reutilizable para 
+manejo de csv. */
 
-char csv_context;
+
+#define CSV_DELIMITER '|'
 
 #endif

@@ -16,24 +16,74 @@
 extern char * xml_context[];
 extern char csv_context;
 
+
+/*Arreglos de punteros a función con las primitivas de exportadores de ADT_Vector.*/
 status_t (*vector_exporters[MAX_VECTOR_EXPORTERS]) (const void *, const void *, FILE *)  = {
 	(*ADT_Vector_export_as_csv),
-	(*ADT_Vector_export_as_xml)
+	(*ADT_Vector_export_as_xml),
+	(*ADT_Vector_export_as_html)
 };
 
-int (*track_comparators[MAX_TRACK_COMPARATOR]) (const void *, const void *) = {
+
+/*Arreglos de punteros a función con las primitivas de comparación de ADT_Track.-*/
+/*Lo utiliza set_track_vector para setear de que manera se deben comparar -------*/
+/*los elementos del vector para ordenarlo según lo indicado por la configuración.*/
+int (*track_comparators[MAX_TRACK_COMPARATORS]) (const void *, const void *) = {
 	ADT_Track_compare_by_name,
     ADT_Track_compare_by_artist,
     ADT_Track_compare_by_genre,
 };
 
-char *sort_criteria[MAX_SORT_CRITERIA] = {
-	SORT_BY_NAME_STR,
-	SORT_BY_ALBUM_STR,
-	SORT_BY_GENRE_STR
-}; 
 
-status_t process_init_vector (ADT_Vector_t ** ptr_track_vector, config_t *config)
+status_t process_mp3_files(char * mp3_files_arr[], size_t arr_len, config_t *config, FILE * fo)
+{
+	ADT_Vector_t * ptr_track_vector;
+	status_t st;
+
+	if ((st = set_track_vector (&ptr_track_vector, config)) != OK)
+		return st;
+
+	if ((st = load_mp3_tracks_from_files(mp3_files_arr, arr_len, ptr_track_vector)) != OK)
+	{
+		ADT_Vector_delete(&ptr_track_vector);
+		return st;
+	}
+
+	if ((st = ADT_Vector_sort(ptr_track_vector)) != OK)
+	{
+		ADT_Vector_delete(&ptr_track_vector);
+		return st;
+	}
+
+	switch (config -> output_format)
+	{
+		case DOC_TYPE_CSV:
+			if((st = ADT_Vector_export_as_csv(ptr_track_vector, (void *) &csv_context, fo)) != OK)
+			{
+				ADT_Vector_delete(&ptr_track_vector);
+				return st;
+			}
+			break;
+
+		case DOC_TYPE_XML:
+			if((st = ADT_Vector_export_as_xml(ptr_track_vector, (void *) &xml_context, fo)) != OK)
+			{
+				ADT_Vector_delete(&ptr_track_vector);
+				return st;
+			}
+			break;
+
+		default:
+			ADT_Vector_delete(&ptr_track_vector);
+			return ERROR_PROGRAM_INVOCATION;
+	}
+
+	return OK;
+}
+
+/*Crea un ADT_Vector_t vacio y setea sus punteros a función según la configuración recivida por argumento.*/
+/*Una vez utilizado el vector, debe llamarse a ADT_Vector_delete sobre el para liberar memoria.-----------*/
+status_t set_track_vector (ADT_Vector_t ** ptr_track_vector, config_t *config)
 {
 	status_t st;
 
@@ -85,50 +135,16 @@ status_t load_mp3_tracks_from_files(char ** mp3_files_arr, size_t arr_len, ADT_V
 		if ((st = ADT_Track_new_from_mp3_file(mp3_file, &ptr_track)))
 		{
 			fclose(mp3_file);
-			ADT_Vector_delete(&ptr_track_vector);
 			return st;
 		}
 
 		if ((st = ADT_Vector_add_element(ptr_track_vector, ptr_track)) != OK)
 		{
 			fclose(mp3_file);
-			ADT_Vector_delete(&ptr_track_vector);
 			return st;
 		}
 
 		fclose(mp3_file);
-	}
-
-	return OK;
-}
-
-/* argv - CMD_MIN_INPUT_ARGS -> Arreglo de los nombres de los archivos mp3 */
-/* argc - CMD_MIN_INPUT_ARGS: Cantidad de archivos mp3 */
-status_t process_mp3_files(char * argv[], int argc, ADT_Vector_t ** ptr_track_vector, FILE * fo)
-{
-	status_t st;
-
-
-	if ((st = load_mp3_tracks_from_files(argv + MIN_CMD_ARGS, argc - MIN_CMD_ARGS, *ptr_track_vector)) != OK)
-		return st;
-
-	ADT_Vector_sort(*ptr_track_vector);
-
-	switch (config.output_format)
-	{
-		case DOC_TYPE_CSV:
-		if((st = ADT_Vector_export_as_csv(*ptr_track_vector, (void *) &csv_context, fo)) != OK)
-			return st;
-		break;
-
-		case DOC_TYPE_XML:
-		if((st = ADT_Vector_export_as_xml(*ptr_track_vector, (void *) &xml_context, fo)) != OK)
-			return st;
-		break;
-
-		default:
-		return ERROR_PROGRAM_INVOCATION;
-		break;	
 	}
 
 	return OK;
