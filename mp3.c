@@ -36,19 +36,13 @@ status_t parse_mp3_header_to_parameters(const char * mp3_header, char (*name)[],
     temp_name_str[LEXEM_SPAN_TITLE] = '\0';
     strcpy(*name, temp_name_str);
 
-    /*ADT_Track_set_name(*ptr_track, buf);*/
     memcpy(temp_artist_str, mp3_header + LEXEM_START_ARTIST, LEXEM_SPAN_ARTIST);
     temp_artist_str[LEXEM_SPAN_ARTIST] = '\0';
     strcpy(*artist, temp_artist_str);
-    /*ADT_Track_set_artist(*ptr_track, buf);*/
-
-    
-
+   
     memcpy(temp_album_str, mp3_header + LEXEM_START_ALBUM, LEXEM_SPAN_ALBUM);
     temp_album_str[LEXEM_SPAN_ALBUM] = '\0';
     strcpy(*album, temp_album_str);
-    /*ADT_Track_set_album(*ptr_track, buf);*/
-
 
     memcpy(temp_year_str, mp3_header + LEXEM_START_YEAR, LEXEM_SPAN_YEAR);
     temp_year_str[LEXEM_SPAN_YEAR] = '\0';
@@ -57,16 +51,13 @@ status_t parse_mp3_header_to_parameters(const char * mp3_header, char (*name)[],
     if (*temp_str != '\0' && *temp_str != '\n')
     	return ERROR_PROGRAM_INVOCATION;
 
-    /*ADT_Track_set_year(*ptr_track, year_temp);*/
-
     memcpy(temp_comment_str, mp3_header + LEXEM_START_COMMENT, LEXEM_SPAN_COMMENT);
     temp_comment_str[LEXEM_SPAN_COMMENT] = '\0';
     strcpy(*comment, temp_comment_str);
-    /*ADT_Track_set_comment(*ptr_track, buf);*/
 
     memcpy(temp_genre_str, mp3_header + LEXEM_START_GENRE, LEXEM_SPAN_GENRE);
     *genre = temp_genre_str[0];
-    /*ADT_Track_set_genre(*ptr_track, buf[0]);*/
+
 
     return OK;
 }
