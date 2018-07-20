@@ -41,7 +41,10 @@ int main (int argc, char *argv[])
 	}
 
 	if ((fo = fopen(config.output_file_name, "wt")) == NULL)
+	{
+		print_errors(ERROR_OUT_OF_DISK_SPACE);
 		return ERROR_INPUT_FILE_NOT_FOUND;
+	}
 
 	/* argv + CMD_MIN_INPUT_ARGS: Arreglo de los nombres de los archivos mp3 */
 	/* argc - CMD_MIN_INPUT_ARGS: Cantidad de archivos mp3 */
@@ -54,8 +57,8 @@ int main (int argc, char *argv[])
 
 	if (fclose(fo) == EOF)
 	{
-		print_errors(ERROR_CLOSE_FILES);
-		return ERROR_CLOSE_FILES;
+		print_errors(ERROR_OUT_OF_DISK_SPACE);
+		return ERROR_OUT_OF_DISK_SPACE;
 	}
 
 	return OK;

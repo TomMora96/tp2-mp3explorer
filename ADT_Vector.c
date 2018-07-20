@@ -37,8 +37,7 @@ status_t ADT_Vector_new (ADT_Vector_t ** pp)
 	(*pp) -> size = 0;
 
 	(*pp) -> destructor = NULL;
-	(*pp) -> xml_export = NULL;
-	(*pp) -> csv_export = NULL;
+	(*pp) -> exporter = NULL;
 	(*pp) -> comparator = NULL;
 
 	for (i = 0; i < ADT_VECTOR_INIT_CHOP; i++)
@@ -101,6 +100,8 @@ size_t ADT_Vector_get_size(const ADT_Vector_t *pv)
 	return pv -> size;
 }
 
+
+/*Devuelve un acceso físico al elemento del vector--*/
 void * ADT_Vector_get_element(const ADT_Vector_t * v, size_t position)
 {
 	if (v == NULL)
@@ -139,78 +140,61 @@ status_t ADT_Vector_add_element(ADT_Vector_t * v, void * element)
 }
 
 
-/*-------------------Exporters---------------------*/
-status_t ADT_Vector_export_as_csv (const void * v, const void * p_context, FILE * fo)
-{
-	ADT_Vector_t * p = (ADT_Vector_t *) v;
-	size_t i, v_size;
-	void * element;
-	status_t st;
-
-	if(fo == NULL || v == NULL || p_context == NULL)
-		return ERROR_NULL_POINTER;
-
-	if(p -> csv_export == NULL)
-		return ERROR_CSV_EXPORTER_NOT_SET;
-
-	v_size = ADT_Vector_get_size(p);
-
-	for(i = 0; i < v_size; i++)
-	{
-		element = ADT_Vector_get_element(v, i);
-		if((st = (p -> csv_export)(element, p_context, fo)) != OK)
-			return st;
-	}
-
-	return OK;
-}
-
-status_t ADT_Vector_export_as_xml (const void * v, const void * p_context, FILE * fo)
+/*-------------------Exporter---------------------*/
+/*ADT_Vector_export: Exporta los elementos del vector segun el formato determinado por la función seteada en el campo exporter.*/
+/*Argumentos:------------------------------------------------------------------------------------------------------------------*/
+/*-------- v: Puntero al vector a exportar. -----------------------------------------------------------------------------------*/
+/*-------- p_context: Puntero al contexto de exportación. Debe pasarse casteado como (void *). --------------------------------*/
+/*------------------- Las funciones exporter_t se encargan castearlo al tipo de dato adecuado. --------------------------------*/
+/*-------- header_file_name: Nombre del archivo de donde se importa el header del archivo de salida. --------------------------*/
+/*------------------- Si se quiere exportar sin header pasar NULL como argumento. ---------------------------------------------*/
+/*-------- footer_file_name: Nombre del archivo de donde se importa el footer del archivo de salida. --------------------------*/
+/*------------------- Si se quiere exportar sin footer pasar NULL como argumento. ---------------------------------------------*/
+/*-------- fo: Archivo de salida. ---------------------------------------------------------------------------------------------*/
+status_t ADT_Vector_export (const void * v, const void * p_context, const char * header_file_name, const char * footer_file_name, FILE * fo)
 {
 	FILE * header_file, * footer_file;
 	int c;
 	size_t i, vec_size;
 	ADT_Vector_t * p = (ADT_Vector_t *) v;
-	char * * context = (char * *) p_context;
 	void * element;
 	status_t st;
 
+	if(p -> exporter == NULL)
+		return ERROR_EXPORTER_NOT_SET;
 
-	if(p -> csv_export == NULL)
-		return ERROR_XML_EXPORTER_NOT_SET;
+	if(header_file_name != NULL)
+	{
+		if((header_file = fopen(header_file_name, "rt")) == NULL)
+			return ERROR_HEADER_FILE_NOT_FOUND;
 
-	if((header_file = fopen(XML_HEADER, "rt")) == NULL)
-		return ERROR_XML_HEADER_NOT_FOUND;
+		while((c = fgetc(header_file)) != EOF && c)
+			fputc(c, fo);
 
-	while((c = fgetc(header_file)) != EOF && c)
-		fputc(c, fo);
-
-	fclose(header_file);
-
+		fclose(header_file);	
+	}
+	
 	vec_size = ADT_Vector_get_size(p);
 
 	for(i = 0; i < vec_size; i++)
 	{
 		element = ADT_Vector_get_element (v, i);		
-		if((st = (p -> xml_export)(element, context, fo)) != OK)
+		if((st = (p -> exporter)(element, p_context, fo)) != OK)
 			return st;
 	}
 
-	if((footer_file = fopen(XML_FOOTER, "rt")) == NULL)
-		return ERROR_XML_FOOTER_NOT_FOUND;
+	if(footer_file_name != NULL)
+	{
+		if((footer_file = fopen(footer_file_name, "rt")) == NULL)
+			return ERROR_FOOTER_FILE_NOT_FOUND;
 
-	while((c = fgetc(footer_file)) != EOF && c)
-		fputc(c, fo);
+		while((c = fgetc(footer_file)) != EOF && c)
+			fputc(c, fo);
 
-	fclose(footer_file);
+		fclose(footer_file);
+	}
+	
 
-
-	return OK;
-}
-
-status_t ADT_Vector_export_as_html (const void * v, const void * context, FILE * fo)
-{
-	/*IMPLEMENTAR!*/
 	return OK;
 }
 
@@ -241,23 +225,12 @@ status_t ADT_Vector_set_destructor (ADT_Vector_t * v, destructor_t pf)
 	return OK;
 }
 
-status_t ADT_Vector_set_csv_export(ADT_Vector_t * v, exporter_t pf)
+status_t ADT_Vector_set_exporter(ADT_Vector_t * v, exporter_t pf)
 {
 	if(v == NULL || pf == NULL)
 		return ERROR_NULL_POINTER;
 	
-	v -> csv_export = pf;
-
-	return OK;
-
-}
-
-status_t ADT_Vector_set_xml_export(ADT_Vector_t * v, exporter_t pf)
-{
-	if(v == NULL || pf == NULL)
-		return ERROR_NULL_POINTER;
-	
-	v -> xml_export = pf;
+	v -> exporter = pf;
 
 	return OK;
 

@@ -9,7 +9,7 @@
 #include "ADT_Vector.h"
 #include "config.h" 
 
-#define MAX_VECTOR_EXPORTERS 3 
+#define MAX_TRACK_EXPORTERS 3 
 #define MAX_TRACK_COMPARATORS 3
 
 status_t process_mp3_files(char * mp3_files_arr[], size_t arr_len, config_t *config, FILE * fo);

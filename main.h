@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include "types.h"
 #include "config.h"
-#include "ADT_Vector.h"
 
 #define MIN_CMD_ARGS 7
 

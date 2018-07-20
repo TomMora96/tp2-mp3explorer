@@ -18,10 +18,10 @@ extern char csv_context;
 
 
 /*Arreglos de punteros a función con las primitivas de exportadores de ADT_Vector.*/
-status_t (*vector_exporters[MAX_VECTOR_EXPORTERS]) (const void *, const void *, FILE *)  = {
-	(*ADT_Vector_export_as_csv),
-	(*ADT_Vector_export_as_xml),
-	(*ADT_Vector_export_as_html)
+status_t (*track_exporters[MAX_TRACK_EXPORTERS]) (const void *, const void *, FILE *)  = {
+	(*ADT_Track_export_as_csv),
+	(*ADT_Track_export_as_xml),
+	(*ADT_Track_export_as_html)
 };
 
 
@@ -58,7 +58,7 @@ status_t process_mp3_files(char * mp3_files_arr[], size_t arr_len, config_t *con
 	switch (config -> output_format)
 	{
 		case DOC_TYPE_CSV:
-			if((st = ADT_Vector_export_as_csv(ptr_track_vector, (void *) &csv_context, fo)) != OK)
+			if((st = ADT_Vector_export(ptr_track_vector, (void *) &csv_context, NULL, NULL, fo)) != OK)
 			{
 				ADT_Vector_delete(&ptr_track_vector);
 				return st;
@@ -66,7 +66,7 @@ status_t process_mp3_files(char * mp3_files_arr[], size_t arr_len, config_t *con
 			break;
 
 		case DOC_TYPE_XML:
-			if((st = ADT_Vector_export_as_xml(ptr_track_vector, (void *) &xml_context, fo)) != OK)
+			if((st = ADT_Vector_export(ptr_track_vector, (void *) &xml_context, XML_HEADER, XML_FOOTER, fo)) != OK)
 			{
 				ADT_Vector_delete(&ptr_track_vector);
 				return st;
@@ -78,6 +78,7 @@ status_t process_mp3_files(char * mp3_files_arr[], size_t arr_len, config_t *con
 			return ERROR_PROGRAM_INVOCATION;
 	}
 
+	ADT_Vector_delete(&ptr_track_vector);
 	return OK;
 }
 
@@ -90,13 +91,7 @@ status_t set_track_vector (ADT_Vector_t ** ptr_track_vector, config_t *config)
 	if((st = ADT_Vector_new(ptr_track_vector)) != OK)
 		return st;
 
-	if((st = ADT_Vector_set_csv_export(*ptr_track_vector, *ADT_Track_export_as_csv)) != OK)
-	{
-		ADT_Vector_delete(ptr_track_vector);
-		return st;
-	}
-
-	if((st = ADT_Vector_set_xml_export(*ptr_track_vector, *ADT_Track_export_as_xml)) != OK)
+	if((st = ADT_Vector_set_exporter(*ptr_track_vector, *(track_exporters[config -> output_format]))) != OK)
 	{
 		ADT_Vector_delete(ptr_track_vector);
 		return st;

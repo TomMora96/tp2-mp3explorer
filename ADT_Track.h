@@ -37,17 +37,29 @@ status_t ADT_Track_export_as_html (const void * v, const void * p_context, FILE 
 
 
 /*-------------------Getters------------------------*/
-/*Se debe liberar la memoria de las cadenas de---------*/
-/*caracteres devueltas por los getters luego de su uso.*/
+/*ADT_Track_get_name: Se debe liberar la memoria de la cadena de 
+caracteres devuelta luego de su uso.*/
 status_t ADT_Track_get_name(ADT_Track_t *, char **);
+
+/*ADT_Track_get_artist: Se debe liberar la memoria de la cadena de 
+caracteres devuelta luego de su uso.*/
 status_t ADT_Track_get_artist(ADT_Track_t *, char **);
+
+/*ADT_Track_get_albim: Se debe liberar la memoria de la cadena de 
+caracteres devuelta luego de su uso.*/
 status_t ADT_Track_get_album(ADT_Track_t *, char **);
+
 status_t ADT_Track_get_year(ADT_Track_t *, unsigned short *);
+
+/*ADT_Track_get_name: Se debe liberar la memoria de la cadena de 
+caracteres devuelta luego de su uso.*/
 status_t ADT_Track_get_comment(ADT_Track_t *, char **);
+
 status_t ADT_Track_get_genre(ADT_Track_t *, unsigned char *);
 
 
 /*-------------------Setters------------------------*/
+/*Los setters realizan una copia del parametro------*/
 status_t ADT_Track_set_name(ADT_Track_t *, const char *);
 status_t ADT_Track_set_artist(ADT_Track_t *, const char *);
 status_t ADT_Track_set_album(ADT_Track_t *, char *);

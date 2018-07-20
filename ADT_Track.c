@@ -5,7 +5,7 @@
 #include <string.h>
 
 #include "ADT_Track.h"
-#include "genres.h"
+/*#include "genres.h"*/
 #include "mp3.h"
 #include "types.h"
 #include "xml.h"
@@ -38,19 +38,31 @@ status_t ADT_Track_new_from_parameters(ADT_Track_t ** ptr_track, const char * na
 		return st;
 
 	if(strlen(name) > LEXEM_SPAN_TITLE)
+	{
+		ADT_Track_destroy((void **) ptr_track);
 		return ERROR_INVALID_TRACK_PARAMETER;
+	}
 	strcpy((*ptr_track) -> name, name);
 
 	if(strlen(artist) > LEXEM_SPAN_ARTIST)
+	{
+		ADT_Track_destroy((void **) ptr_track);
 		return ERROR_INVALID_TRACK_PARAMETER;
+	}
 	strcpy((*ptr_track) -> artist, artist);
 
 	if(strlen(album) > LEXEM_SPAN_ALBUM)
+	{
+		ADT_Track_destroy((void **) ptr_track);
 		return ERROR_INVALID_TRACK_PARAMETER;
+	}
 	strcpy((*ptr_track) -> album, album);
 
 	if(strlen(comment) > LEXEM_SPAN_COMMENT)
+	{
+		ADT_Track_destroy((void **) ptr_track);
 		return ERROR_INVALID_TRACK_PARAMETER;
+	}
 	strcpy((*ptr_track) -> comment, comment);
 	
 	(*ptr_track) -> year = year;
@@ -63,53 +75,26 @@ status_t ADT_Track_new_from_mp3_file(FILE * fi, ADT_Track_t ** ptr_track)
 {
 	status_t  st;
 	char mp3_header[MP3_HEADER_SIZE];
-	char buf[MP3_HEADER_SIZE];
-	char * temp;
-	unsigned long int year_temp;
+	char track_name[LEXEM_SPAN_TITLE];
+	char track_artist[LEXEM_SPAN_ARTIST];
+	char track_album[LEXEM_SPAN_ALBUM];
+	unsigned short track_year;
+	char track_comment[LEXEM_SPAN_COMMENT];
+	unsigned char track_genre;
 
 	if(fi == NULL || ptr_track == NULL)
 		return ERROR_NULL_POINTER;
 
-	if((st = ADT_Track_new(ptr_track)) != OK)
-		return st;
-
 	if((st = get_mp3_header(fi, mp3_header)) != OK)
-	{
-		ADT_Track_destroy((void **) &ptr_track);
 		return st;
-	}
+	
+	if((st = parse_mp3_header_to_parameters(mp3_header, &track_name, &track_artist, &track_album, &track_year, &track_comment, &track_genre)) != OK)
+		return st;
+	
+	if((st = ADT_Track_new_from_parameters(ptr_track, track_name, track_artist, track_album, track_year, track_comment, track_genre)) != OK)
+		return st;
 
-	memcpy(buf, mp3_header + LEXEM_START_TITLE, LEXEM_SPAN_TITLE);
-    buf[LEXEM_SPAN_ARTIST] = '\0';
-
-    ADT_Track_set_name(*ptr_track, buf);
-
-    memcpy(buf, mp3_header + LEXEM_START_ARTIST, LEXEM_SPAN_ARTIST);
-    buf[LEXEM_SPAN_ARTIST] = '\0';
-    ADT_Track_set_artist(*ptr_track, buf);
-
-    memcpy(buf, mp3_header + LEXEM_START_ALBUM, LEXEM_SPAN_ALBUM);
-    buf[LEXEM_SPAN_ALBUM] = '\0';
-    ADT_Track_set_album(*ptr_track, buf);
-
-    memcpy(buf, mp3_header + LEXEM_START_YEAR, LEXEM_SPAN_YEAR);
-    buf[LEXEM_SPAN_YEAR] = '\0';
-
-    year_temp = strtol(buf, &temp, 10);
-
-    if (*temp != '\0' && *temp != '\n')
-    	return ERROR_PROGRAM_INVOCATION;
-
-    ADT_Track_set_year(*ptr_track, year_temp);
-
-    memcpy(buf, mp3_header + LEXEM_START_COMMENT, LEXEM_SPAN_COMMENT);
-    buf[LEXEM_SPAN_COMMENT] = '\0';
-    ADT_Track_set_comment(*ptr_track, buf);
-
-    memcpy(buf, mp3_header + LEXEM_START_GENRE, LEXEM_SPAN_GENRE);
-    ADT_Track_set_genre(*ptr_track, buf[0]);
-
-
+	
 	return OK;
 }
 
@@ -205,8 +190,8 @@ status_t ADT_Track_export_as_html (const void * v, const void * p_context, FILE 
 }
 
 /*-------------------Getters------------------------*/
-/* Se debe liberar la memoria de las cadenas de 
-caracteres devueltas por los getters luego de su uso. */
+/*ADT_Track_get_name: Se debe liberar la memoria de la cadena de 
+caracteres devuelta luego de su uso.*/
 status_t ADT_Track_get_name(ADT_Track_t *track, char * *name)
 {
 	if(track == NULL || name == NULL)
@@ -218,6 +203,8 @@ status_t ADT_Track_get_name(ADT_Track_t *track, char * *name)
 	return OK;
 }
 
+/*ADT_Track_get_artist: Se debe liberar la memoria de la cadena de 
+caracteres devuelta luego de su uso.*/
 status_t ADT_Track_get_artist(ADT_Track_t *track, char * *artist)
 {
 	if(track == NULL || artist == NULL)
@@ -229,6 +216,8 @@ status_t ADT_Track_get_artist(ADT_Track_t *track, char * *artist)
 	return OK;
 }
 
+/*ADT_Track_get_album: Se debe liberar la memoria de la cadena de 
+caracteres devuelta luego de su uso.*/
 status_t ADT_Track_get_album(ADT_Track_t *track, char * *album)
 {
 	if(track == NULL || album == NULL)
@@ -240,6 +229,8 @@ status_t ADT_Track_get_album(ADT_Track_t *track, char * *album)
 	return OK;
 }
 
+/*ADT_Track_get_comment: Se debe liberar la memoria de la cadena de 
+caracteres devuelta luego de su uso.*/
 status_t ADT_Track_get_comment(ADT_Track_t *track, char * *comment)
 {
 	if(track == NULL || comment == NULL)
@@ -274,7 +265,7 @@ status_t ADT_Track_get_genre(ADT_Track_t *track, unsigned char *genre)
 
 
 /*-------------------Setters------------------------*/
-/* Los setters realizan una copia del parametro-----*/
+/*Los setters realizan una copia del parametro------*/
 status_t ADT_Track_set_name(ADT_Track_t * ptr_track, const char * name)
 {
 	if(ptr_track == NULL || name == NULL)

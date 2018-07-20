@@ -11,13 +11,12 @@
 #define MSG_ERROR_OUT_OF_MEMORY "Error out of memory."
 #define MSG_ERROR_INVALID_INPUT_POSITION "Invalid input position."
 #define MSG_ERROR_INPUT_FILE_NOT_FOUND "Cant open file."
-#define MSG_ERROR_XML_EXPORTER_NOT_SET "Tried to export vector to XML without setting the correct exporter function."
-#define MSG_ERROR_CSV_EXPORTER_NOT_SET "Tried to export vector to CSV without setting the correct exporter function."
+#define MSG_ERROR_EXPORTER_NOT_SET "Tried to export vector without setting an exporter function."
 #define MSG_ERROR_COMPARATOR_NOT_SET "Tried to sort vector without setting a comparator function."
 #define MSG_ERROR_INVALID_TRACK_PARAMETER "Tried to create new track from invalid parameters."
-#define MSG_ERROR_CLOSE_FILE "File can not close."
-#define MSG_ERROR_XML_HEADER_NOT_FOUND "Error open xml header."
-#define MSG_ERROR_XML_FOOTER_NOT_FOUND "Error open xml footer."
+#define MSG_ERROR_OUT_OF_DISK_SPACE "Out of disk space."
+#define MSG_ERROR_HEADER_FILE_NOT_FOUND "Error open header file."
+#define MSG_ERROR_FOOTER_FILE_NOT_FOUND "Error open footer file."
 
 status_t print_errors (status_t status);
 

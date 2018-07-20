@@ -31,12 +31,9 @@
 #define LEXEM_START_GENRE  127
 #define LEXEM_SPAN_GENRE     1
 
-status_t get_mp3_header(FILE * f, char * header);
+#define MAX_GENRES 127
 
-typedef enum {
-	SORT_BY_NAME = 0,
-	SORT_BY_ARTIST = 1,
-	SORT_BY_GENRE = 2
-} sort_criteria_t;
+status_t get_mp3_header(FILE * f, char * header);
+status_t parse_mp3_header_to_parameters(const char * mp3_header, char (*name)[], char (*artist)[], char (*album)[], unsigned short *year, char (*comment)[], unsigned char *genre);
 
 #endif
